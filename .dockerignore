@@ -1,0 +1,10 @@
+.venv
+**/__pycache__
+results
+figs
+data/raw
+data/processed
+*.pdf
+*.docx
+EarlyDrop_ Student*.csv
+deck/*.pdf

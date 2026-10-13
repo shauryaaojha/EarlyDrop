@@ -1,0 +1,476 @@
+<title>EarlyDrop Review Deck</title>
+<meta name="description" content="EarlyDrop: student success and dropout-risk analysis. 21CSC305P Machine Learning, PBL review deck.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: one 1600×900 stage scaled to the window; slides stack absolutely and are choreographed by deck.js.
+   Single deliberate "Blackboard" look (board green, chalk white, one chalk-yellow highlight), so no light-theme blocks. */
+@font-face { font-family:'Space Grotesk'; font-weight:500; src:local('Space Grotesk Medium'), url('fonts/SpaceGrotesk-500.ttf'); }
+@font-face { font-family:'Space Grotesk'; font-weight:700; src:local('Space Grotesk Bold'), url('fonts/SpaceGrotesk-700.ttf'); }
+@font-face { font-family:'IBM Plex Sans'; font-weight:400; src:local('IBM Plex Sans'), url('fonts/IBMPlexSans-400.ttf'); }
+@font-face { font-family:'IBM Plex Sans'; font-weight:500; src:local('IBM Plex Sans Medium'), url('fonts/IBMPlexSans-500.ttf'); }
+@font-face { font-family:'IBM Plex Sans'; font-weight:600; src:local('IBM Plex Sans SemiBold'), url('fonts/IBMPlexSans-600.ttf'); }
+@font-face { font-family:'IBM Plex Mono'; font-weight:400; src:local('IBM Plex Mono'), url('fonts/IBMPlexMono-400.ttf'); }
+@font-face { font-family:'IBM Plex Mono'; font-weight:500; src:local('IBM Plex Mono Medium'), url('fonts/IBMPlexMono-500.ttf'); }
+
+:root {
+  color-scheme: dark;
+  /* color: board, chalk, one chalk-yellow highlight */
+  --bg:#0f1a16; --panel:#15231e; --panel2:#1b2d26; --line:#26392f; --line2:#34493e;
+  --ink:#ecebe4; --ink2:#c9cfc6; --muted:#8fa197; --muted2:#62756b;
+  --hi:#e3c35a; --coral:#ec7a6c; --ochre:#e3c35a; --sky:#7db4e6;
+  /* data marks (validated for CVD on the board) */
+  --d1:#b3861a; --d2:#3a8ad0; --d3:#cf4b44; --d4:#8f6fd0; --d5:#2f9a74;
+  --s0:#cf4b44; --s1:#b3861a; --s2:#3a8ad0;   /* Struggling · Stable · Strong */
+  --stroke:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'><path d='M2 8 C 40 2, 80 11, 120 6 S 180 3, 198 7' fill='none' stroke='%23e3c35a' stroke-width='3.2' stroke-linecap='round'/></svg>");
+  /* type */
+  --display:'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --body:'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  --mono:'IBM Plex Mono', Consolas, ui-monospace, monospace;
+}
+* { box-sizing:border-box; }
+[hidden] { display:none !important; }
+html, body { height:100%; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); overflow:hidden; -webkit-font-smoothing:antialiased; }
+
+#viewport { position:fixed; inset:0; display:grid; place-items:center; overflow:hidden; background:var(--bg); }
+#bg { position:absolute; inset:0; width:100%; height:100%; }
+#glow { position:absolute; inset:0; pointer-events:none; background:radial-gradient(140% 90% at 50% 40%, transparent 55%, rgba(0,0,0,.4) 100%); }
+#grain { position:absolute; inset:0; pointer-events:none; opacity:.08; mix-blend-mode:screen; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.4 -0.55'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+#stage { position:relative; width:1600px; height:900px; flex:none; transform-origin:center center; }
+
+.slide { position:absolute; inset:0; padding:78px 96px 84px; display:flex; flex-direction:column; visibility:hidden; }
+.slide.active { visibility:visible; }
+.slide > * { min-width:0; }
+
+/* chrome */
+#chrome { position:absolute; left:96px; right:96px; bottom:34px; display:flex; align-items:center; gap:22px; font:500 13px var(--mono); color:var(--muted2); letter-spacing:.08em; pointer-events:none; }
+#chrome .sec { color:var(--hi); text-transform:uppercase; }
+#chrome .bar { flex:1; height:2px; background:var(--line); border-radius:2px; overflow:hidden; }
+#chrome .bar i { display:block; height:100%; width:0; background:var(--hi); transition:width .7s cubic-bezier(.6,0,.2,1); }
+#chrome .num { font-variant-numeric:tabular-nums; }
+#brand { position:absolute; left:96px; top:34px; font:700 18px var(--display); letter-spacing:-.03em; color:var(--ink); display:flex; gap:12px; align-items:center; pointer-events:none; }
+#brand span { font:500 12px var(--mono); color:var(--muted2); letter-spacing:.14em; }
+#brand b { width:9px; height:9px; border-radius:50%; background:var(--hi); }
+
+/* type scale: 13 / 16 / 20 / 26 / 40 / 64 / 140 */
+.kicker { font:500 15px var(--mono); letter-spacing:.2em; text-transform:uppercase; color:var(--hi); display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+.kicker::before { content:""; width:34px; height:2px; border-radius:2px; background:var(--hi); }
+h1, h2, h3 { font-family:var(--display); margin:0; text-wrap:balance; letter-spacing:-.035em; }
+h2 { font-size:64px; line-height:1.0; font-weight:700; }
+h2 em { font-style:normal; color:var(--ink); padding-bottom:.08em; background:var(--stroke) no-repeat left bottom / 100% .16em; }
+h3 { font-size:26px; font-weight:600; letter-spacing:-.02em; }
+p, li { font-size:20px; line-height:1.55; color:var(--ink2); }
+.lead { font-size:24px; line-height:1.5; color:var(--ink2); max-width:1060px; margin:22px 0 0; }
+.small { font-size:16px; color:var(--muted); }
+.mono { font-family:var(--mono); }
+.muted { color:var(--muted); }
+.c-hi { color:var(--hi); } .c-lilac { color:#b9a6e3; } .c-ochre { color:var(--ochre); } .c-coral { color:var(--coral); } .c-sky { color:var(--sky); }
+.num { font-variant-numeric:tabular-nums; }
+
+.row { display:flex; gap:28px; } .col { display:flex; flex-direction:column; gap:18px; }
+.grow { flex:1; min-width:0; } .mt { margin-top:auto; } .gap-s { gap:14px; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:28px; } .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; } .grid4 { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+.body { flex:1; display:flex; flex-direction:column; justify-content:center; min-height:0; margin-top:34px; }
+
+.panel { position:relative; border:1px solid var(--line); border-radius:16px; padding:24px 26px; background:var(--panel); }
+.panel h3 { margin-bottom:8px; }
+.panel .cap { font:500 13px var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--muted2); margin-bottom:10px; }
+.stat .v { font:700 64px/1 var(--display); letter-spacing:-.04em; color:var(--ink); font-variant-numeric:tabular-nums; }
+.stat .l { font-size:17px; color:var(--muted); margin-top:10px; }
+.stat .v .small { font:400 17px var(--body); letter-spacing:0; color:var(--muted); }
+.chip { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line2); border-radius:6px; padding:7px 14px; font:500 15px var(--mono); color:var(--ink2); background:var(--panel); }
+.badge { display:inline-flex; gap:10px; align-items:center; padding:8px 16px; border-radius:6px; border:1px dashed rgba(227,195,90,.6); color:var(--hi); font:500 14px var(--mono); letter-spacing:.08em; }
+.badge i { width:8px; height:8px; border-radius:50%; background:var(--hi); }
+.formula { font:500 24px var(--mono); color:var(--ink); background:var(--panel2); border:1px dashed var(--line2); border-radius:12px; padding:16px 22px; }
+.dot { display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:8px; vertical-align:middle; }
+
+table.t { width:100%; border-collapse:collapse; font-size:18px; }
+table.t th { text-align:left; font:500 13px var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--muted2); padding:10px 12px; border-bottom:1px solid var(--line); }
+table.t td { padding:11px 12px; border-bottom:1px solid rgba(27,37,64,.6); color:var(--ink2); font-variant-numeric:tabular-nums; }
+table.t td.n, table.t th.n { text-align:right; font-family:var(--mono); }
+table.t tr.best td { color:var(--ink); background:rgba(227,195,90,.07); }
+table.t tr.best td:first-child { box-shadow:inset 3px 0 0 var(--hi); }
+
+.chart { position:relative; min-height:0; }
+.chart svg { display:block; width:100%; height:100%; overflow:visible; }
+
+/* title slide */
+.hero-title { font:700 210px/.84 var(--display); letter-spacing:-.07em; margin:22px 0 26px; color:var(--ink); align-self:flex-start; padding-bottom:.2em; background:var(--stroke) no-repeat left bottom / 100% .14em; }
+.hero-title .ch { display:inline-block; }
+.team { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:auto; }
+.team .m { border-top:1px solid var(--line); padding-top:14px; }
+.team .m b { display:block; font:600 21px var(--display); color:var(--ink); letter-spacing:-.01em; }
+.team .m span { font:400 14px var(--mono); color:var(--muted2); }
+
+.divider h2 { font-size:150px; line-height:.9; letter-spacing:-.06em; }
+.divider .units { display:flex; gap:24px; margin-top:42px; }
+.outline { color:transparent; -webkit-text-stroke:1.5px var(--hi); }
+
+/* overlays */
+#notes { position:fixed; left:50%; bottom:22px; transform:translateX(-50%); width:min(980px,calc(100vw - 32px)); max-height:42vh; overflow:auto; padding:20px 24px; border-radius:18px; border:1px solid var(--line); background:rgba(15,26,22,.97); backdrop-filter:blur(16px); z-index:20; font-size:17px; line-height:1.55; color:var(--ink2); }
+#notes .who { font:500 13px var(--mono); color:var(--hi); letter-spacing:.14em; text-transform:uppercase; margin-bottom:6px; }
+#help { position:fixed; right:18px; top:16px; z-index:20; font:500 12px var(--mono); color:var(--muted2); letter-spacing:.06em; }
+#help kbd { border:1px solid var(--line); border-radius:6px; padding:2px 6px; color:var(--muted); font-family:var(--mono); }
+body.overview #stage .slide { visibility:visible; }
+body.overview #chrome, body.overview #brand { display:none; }
+#ov { position:fixed; inset:0; z-index:30; overflow:auto; background:rgba(15,26,22,.98); padding:28px 16px; display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; align-content:start; }
+#ov button { all:unset; cursor:pointer; border:1px solid var(--line); border-radius:14px; padding:14px 16px; background:var(--panel); color:var(--ink2); font:500 16px var(--display); display:flex; flex-direction:column; gap:6px; }
+#ov button:hover, #ov button:focus-visible { border-color:var(--hi); outline:none; }
+#ov button small { font:500 12px var(--mono); color:var(--muted2); letter-spacing:.1em; }
+#ov button.cur { border-color:var(--hi); background:var(--panel2); }
+button:focus-visible { outline:2px solid var(--hi); outline-offset:2px; }
+
+/* print / PDF: every slide on its own 16:9 page, final state */
+body.print { overflow:visible; }
+body.print #viewport { position:static; display:block; }
+body.print #bg, body.print #glow, body.print #grain, body.print #help, body.print #chrome { display:none; }
+body.print #stage { transform:none !important; width:1600px; height:auto; }
+body.print .slide { position:relative; visibility:visible; width:1600px; height:900px; page-break-after:always; break-after:page; overflow:hidden;
+  background:var(--bg); }
+body.print .slide:last-of-type { break-after:auto; page-break-after:auto; }
+@page { size:1600px 900px; margin:0; }
+@media (max-width: 700px) { #help { display:none; } }
+</style>
+
+<div id="viewport">
+  <canvas id="bg" aria-hidden="true"></canvas>
+  <div id="glow"></div>
+  <div id="grain"></div>
+  <div id="stage">
+    <div id="brand"><b></b>EarlyDrop <span>21CSC305P · E2</span></div>
+
+    <!-- 1 ─ Title -->
+    <section class="slide" data-title="EarlyDrop" data-section="Review" data-enter="title" data-speaker="Shaurya Ojha"
+      data-notes="Open with the one-line thesis: we want to flag academic risk while there is still time to act. Introduce the team and that this review covers the full pipeline up to PBL-II (Units 1–4).">
+      <div class="kicker rv">Machine Learning · PBL Review · Units 1 – 4</div>
+      <h1 class="hero-title" id="heroTitle">EarlyDrop</h1>
+      <p class="lead rv" style="font-size:30px;max-width:1150px;color:var(--ink)">Student success and dropout-risk analysis. Spotting academic risk <span class="c-hi">before</span> the grades fall.</p>
+      <div class="row rv" style="margin-top:26px;gap:14px;align-items:center">
+        <span class="badge"><i></i>SYNTHETIC COHORT · n = <span data-b="meta.n_synthetic"></span> · CALIBRATED ON <span data-b="meta.n_real"></span> REAL RESPONSES</span>
+        <span class="chip">Faculty · Dr. Santhiya Parivallal</span>
+      </div>
+      <div class="team">
+        <div class="m rv"><b>Yash Arun Mulajkar</b><span>RA2411003011562</span></div>
+        <div class="m rv"><b>Bignesh Sahu</b><span>RA2411003011563</span></div>
+        <div class="m rv"><b>Shaurya Ojha</b><span>RA2411003011565</span></div>
+        <div class="m rv"><b>Aditya Bhutada</b><span>RA2411003011607</span></div>
+      </div>
+    </section>
+
+    <!-- 2 ─ Problem -->
+    <section class="slide" data-title="The problem" data-section="Problem" data-enter="problem" data-speaker="Yash Arun Mulajkar"
+      data-notes="Today, help arrives after the decline is visible in results. Walk the timeline: the reactive system notices at the results of semester 5; an early-warning system notices from mid-semester signals in semester 3–4.">
+      <div class="kicker rv">Problem identification</div>
+      <h2 class="rv">Help usually arrives <em>after</em> the grades have already fallen.</h2>
+      <div class="body">
+        <div class="panel rv" style="padding:30px 34px">
+          <div class="chart" data-chart="timeline" style="height:300px"></div>
+        </div>
+        <div class="grid3" style="margin-top:28px">
+          <div class="panel rv"><div class="cap">Question</div><p style="margin:0">Can mid-semester survey signals flag students whose <b>end-semester SGPA will fall below 6.5</b>?</p></div>
+          <div class="panel rv"><div class="cap">Signals</div><p style="margin:0">Attendance, internal marks, backlogs, study behaviour, engagement, motivation, support.</p></div>
+          <div class="panel rv"><div class="cap">Use</div><p style="margin:0">An early-warning score that triggers an <b>offer of help</b>. Never a label.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 ─ Data source -->
+    <section class="slide" data-title="Dataset" data-section="Dataset" data-enter="realdata" data-speaker="Yash Arun Mulajkar"
+      data-notes="We built and ran a real Google Form. The 15 responses so far are all high performers with zero backlogs and no outcome label, so they cannot train a risk model. We therefore generate a synthetic cohort in the exact form schema and calibrate it on the real answers. The chart shows real vs synthetic Likert means for high performers.">
+      <div class="kicker rv">Dataset selection</div>
+      <h2 class="rv">A live Google Form, and an honest problem with it.</h2>
+      <div class="body">
+        <div class="row" style="align-items:stretch">
+          <div class="col" style="width:470px">
+            <div class="panel stat rv"><div class="v"><span data-b="meta.n_real"></span> <span class="small">real responses</span></div><div class="l">CGPA <span data-b="real.profile.cgpa_min"></span> – <span data-b="real.profile.cgpa_max"></span> · <span data-b="real.profile.backlogs_total"></span> backlogs in total</div></div>
+            <div class="panel rv"><div class="cap">So we</div>
+              <p style="margin:0">generate <b class="c-hi"><span data-b="meta.n_synthetic"></span> synthetic students</b> in the form's exact 50-column format, and <b>calibrate</b> their answers so high performers match the real ones.</p></div>
+            <div class="panel rv"><div class="cap">Mean gap after calibration</div><div class="stat"><div class="v c-sky"><span data-b="real.calibration_mean_abs_gap" data-f="f3" class="cu"></span></div><div class="l">Likert points, averaged over 28 items</div></div></div>
+          </div>
+          <div class="panel grow rv"><div class="cap">Real vs calibrated synthetic · Likert means (high performers)</div>
+            <div class="chart" data-chart="calibration" style="height:520px"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 ─ Cleaning -->
+    <section class="slide" data-title="Cleaning" data-section="Dataset" data-enter="cleaning" data-speaker="Yash Arun Mulajkar"
+      data-notes="The same cleaning code runs on real and synthetic exports. The synthetic export deliberately reproduces the quirks we saw in the real one: percent signs, a 7% typo, questions added mid-survey, double submissions.">
+      <div class="kicker rv">Pre-processing</div>
+      <h2 class="rv">The real export was messy, so the synthetic one is too.</h2>
+      <div class="body">
+        <div class="chart rv" data-chart="cleaning" style="height:520px"></div>
+      </div>
+    </section>
+
+    <!-- 5 ─ Generator -->
+    <section class="slide" data-title="Synthetic generator" data-section="Dataset" data-enter="generator" data-speaker="Yash Arun Mulajkar"
+      data-notes="Every student has latent traits. Their academic state evolves semester to semester as a Markov chain, and SGPA is emitted from the state. Survey answers come from the traits and the current state. Because we know the truth, every method can be checked against it.">
+      <div class="kicker rv">How the cohort is generated</div>
+      <h2 class="rv">A hidden process we control, so every method can be <em>checked</em>.</h2>
+      <div class="body"><div class="chart" data-chart="generator" style="height:560px"></div></div>
+    </section>
+
+    <!-- 6 ─ PBL-I divider -->
+    <section class="slide divider" data-title="PBL-I recap" data-section="PBL-I" data-enter="divider" data-speaker="Bignesh Sahu"
+      data-notes="Quick recap of PBL-I so the panel sees the full pipeline: EDA and probability (Unit 1), linear models for regression and classification (Unit 2).">
+      <div class="body" style="margin-top:0">
+        <div class="kicker rv">Project review 1 · recap</div>
+        <h2 class="rv"><span class="outline">PBL-I</span><br>Units 1 &amp; 2</h2>
+        <div class="units">
+          <span class="chip rv">EDA · covariance · correlation</span><span class="chip rv">Bayes' rule</span><span class="chip rv">Curve fitting</span>
+          <span class="chip rv">OLS · Ridge · Huber · Bayesian LR</span><span class="chip rv">Logistic · Bayesian logistic · LDA · SVM</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 ─ EDA -->
+    <section class="slide" data-title="EDA" data-section="PBL-I · Unit 1" data-enter="eda" data-speaker="Bignesh Sahu"
+      data-notes="Correlation of each selected feature with the at-risk label. Internal marks and attendance are the strongest protective signals; backlogs and concern push risk up. Covariance pairs on the right.">
+      <div class="kicker rv">Unit 1 · exploratory data analysis</div>
+      <h2 class="rv">Which signals move with risk?</h2>
+      <div class="body"><div class="row" style="align-items:stretch">
+        <div class="panel grow rv"><div class="cap">Pearson r with at_risk (15 selected features)</div><div class="chart" data-chart="corr" style="height:520px"></div></div>
+        <div class="col" style="width:440px">
+          <div class="panel stat rv"><div class="v"><span data-b="unit1.class_balance.at_risk"></span><span class="small"> / <span data-b="unit1.n_rows"></span></span></div><div class="l">students at risk (end-sem SGPA &lt; 6.5)</div></div>
+          <div class="panel rv"><div class="cap">Covariance → correlation</div><div class="chart" data-chart="covpairs"></div></div>
+          <div class="panel rv"><div class="cap">Expectation</div><p style="margin:0">E[backlogs] = Σ x·P(x) = <b class="c-hi"><span data-b="unit1.probability.backlogs_expectation" data-f="f3"></span></b></p></div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- 8 ─ Bayes + poly -->
+    <section class="slide" data-title="Bayes & curve fitting" data-section="PBL-I · Unit 1" data-enter="bayes" data-speaker="Bignesh Sahu"
+      data-notes="Bayes: the prior risk is about 28%. Seeing attendance below SRM's 75% rule lifts it to about 71%, and weak internals lift it to about 96%. The sequential update assumes conditional independence; the exact answer from the data is almost the same. Right: a degree-9 polynomial fitted to 12 points memorises them and explodes on unseen students.">
+      <div class="kicker rv">Unit 1 · probability &amp; curve fitting</div>
+      <h2 class="rv">Evidence updates belief. Too much flexibility memorises noise.</h2>
+      <div class="body"><div class="grid2">
+        <div class="panel rv"><div class="cap">Bayes' rule · P(H | E) = P(E | H) P(H) / P(E)</div><div class="chart" data-chart="bayes" style="height:440px"></div>
+          <p class="small" style="margin:6px 0 0">Exact P(H | both) from the data: <b class="c-hi"><span data-b="unit1.bayes.posterior" data-f="f3"></span></b> on <span data-b="unit1.bayes.n_E"></span> students. Naive gap <span data-b="unit1.bayes.naive_vs_exact_gap" data-f="s3"></span>.</p></div>
+        <div class="panel rv"><div class="cap">Polynomial fit · 12 training students · RMSE (log scale)</div><div class="chart" data-chart="poly" style="height:440px"></div>
+          <p class="small" style="margin:6px 0 0">M = 9 test RMSE <b class="c-coral"><span data-b="unit1.poly_fit.m9_test_rmse" data-f="f2"></span></b> → with ridge (ln λ = −8) <b class="c-sky"><span data-b="unit1.poly_fit.m9_regularised_test_rmse" data-f="f3"></span></b></p></div>
+      </div></div>
+    </section>
+
+    <!-- 9 ─ Regression -->
+    <section class="slide" data-title="Regression" data-section="PBL-I · Unit 2" data-enter="regression" data-speaker="Bignesh Sahu"
+      data-notes="Target: end-semester SGPA. Four linear models land close together; the Bayesian model adds calibrated uncertainty (93% of test students inside the 95% band). Robustness: corrupt 8% of training targets and OLS degrades while Huber barely moves.">
+      <div class="kicker rv">Unit 2 · linear models for regression</div>
+      <h2 class="rv">Predicting end-semester SGPA, with error bars.</h2>
+      <div class="body"><div class="row" style="align-items:stretch">
+        <div class="panel grow rv"><div class="cap">Held-out test set</div><div class="chart" data-chart="regtable"></div>
+          <div class="row" style="margin-top:22px;gap:18px">
+            <div class="stat"><div class="v c-hi"><span class="cu" data-b="unit2.regression.blr.coverage_95" data-f="p0"></span></div><div class="l">inside the Bayesian 95 % band</div></div>
+            <div class="stat"><div class="v"><span data-b="unit2.regression.blr.gamma_eff_params" data-f="f1"></span></div><div class="l">effective parameters γ (evidence)</div></div>
+          </div></div>
+        <div class="panel rv" style="width:560px"><div class="cap">Robust regression · 8 % corrupted targets</div><div class="chart" data-chart="robust" style="height:430px"></div></div>
+      </div></div>
+    </section>
+
+    <!-- 10 ─ Classification -->
+    <section class="slide" data-title="Classification" data-section="PBL-I · Unit 2" data-enter="classification" data-speaker="Bignesh Sahu"
+      data-notes="Seven classifiers, stratified 5-fold CV. All linear-ish models sit around 0.95 AUC. Bayesian logistic regression is written from scratch (IRLS + Laplace) and matches sklearn, with the bonus of a posterior on every weight. For early warning, lowering the threshold trades precision for recall.">
+      <div class="kicker rv">Unit 2 · linear models for classification</div>
+      <h2 class="rv">Seven classifiers, five folds, one target.</h2>
+      <div class="body"><div class="row" style="align-items:stretch">
+        <div class="panel grow rv"><div class="cap">5-fold CV ROC-AUC (mean ± sd)</div><div class="chart" data-chart="clf" style="height:470px"></div></div>
+        <div class="panel rv" style="width:560px"><div class="cap">Bayesian logistic · threshold for early warning</div><div class="chart" data-chart="thresholds" style="height:300px"></div>
+          <p class="small" style="margin:14px 0 0">RBF-SVM grid search: C = <span data-b="unit2.classification.svm_rbf_grid.best_params.C"></span>, γ = <span data-b="unit2.classification.svm_rbf_grid.best_params.gamma"></span> · CV AUC <span data-b="unit2.classification.svm_rbf_grid.best_cv_auc" data-f="f3"></span></p></div>
+      </div></div>
+    </section>
+
+    <!-- 11 ─ PBL-II divider -->
+    <section class="slide divider" data-title="PBL-II" data-section="PBL-II" data-enter="divider" data-speaker="Shaurya Ojha"
+      data-notes="PBL-II: Unit 3 clustering and mixture models, Unit 4 hidden Markov models. Same dataset, same pipeline, new questions: can the structure be found without labels, and can the trajectory be modelled?">
+      <div class="body" style="margin-top:0">
+        <div class="kicker rv">Project review 2</div>
+        <h2 class="rv"><span class="outline">PBL-II</span><br>Units 3 &amp; 4</h2>
+        <div class="units">
+          <span class="chip rv">K-Means</span><span class="chip rv">Gaussian mixtures · EM</span><span class="chip rv">Hierarchical</span><span class="chip rv">PCA · factor analysis</span>
+          <span class="chip rv">Markov chain</span><span class="chip rv">HMM · Baum–Welch · Viterbi</span><span class="chip rv">Kalman filter</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 ─ k selection -->
+    <section class="slide" data-title="Choosing k" data-section="PBL-II · Unit 3" data-enter="ksel" data-speaker="Shaurya Ojha"
+      data-notes="Three criteria. The elbow is soft, silhouette prefers 2, and the Gaussian-mixture BIC has a clear minimum at 3. We take k = 3 because BIC is a likelihood-based criterion and the three groups are interpretable.">
+      <div class="kicker rv">Unit 3 · how many groups?</div>
+      <h2 class="rv">Three criteria. BIC has the clearest answer: <em>k = <span data-b="unit3.k_final"></span></em>.</h2>
+      <div class="body"><div class="grid3">
+        <div class="panel rv"><div class="cap">Elbow · K-Means distortion J</div><div class="chart" data-chart="elbow" style="height:380px"></div></div>
+        <div class="panel rv"><div class="cap">Silhouette (higher is better)</div><div class="chart" data-chart="silh" style="height:380px"></div></div>
+        <div class="panel rv"><div class="cap">GMM BIC (lower is better)</div><div class="chart" data-chart="bic" style="height:380px"></div></div>
+      </div></div>
+    </section>
+
+    <!-- 13 ─ K-Means live -->
+    <section class="slide" data-title="K-Means live" data-section="PBL-II · Unit 3" data-enter="kmeans" data-speaker="Shaurya Ojha"
+      data-notes="This is our from-scratch K-Means (k-means++ seeding, Lloyd iterations) replayed on the first two principal components. Watch the centroids move and the distortion J fall until assignments stop changing.">
+      <div class="kicker rv">Unit 3 · K-Means from scratch</div>
+      <h2 class="rv">Watch Lloyd's algorithm converge.</h2>
+      <div class="body"><div class="row" style="align-items:stretch">
+        <div class="panel grow rv" style="padding:14px"><canvas id="kmCanvas" width="1500" height="1020" style="width:100%;height:510px;display:block"></canvas></div>
+        <div class="col" style="width:380px">
+          <div class="panel stat rv"><div class="cap">Iteration</div><div class="v"><span id="kmIter">1</span><span class="small"> / <span data-b="unit3.scratch_vs_sklearn.kmeans_iterations"></span></span></div></div>
+          <div class="panel stat rv"><div class="cap">Distortion J</div><div class="v c-hi" id="kmJ">–</div></div>
+          <div class="panel rv"><div class="cap">Check</div><p style="margin:0">Scratch vs sklearn ARI <b class="c-sky"><span data-b="unit3.scratch_vs_sklearn.kmeans_ari" data-f="f2"></span></b></p></div>
+          <button class="chip" id="kmReplay" type="button" style="justify-content:center;cursor:pointer">↻ Replay</button>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- 14 ─ Comparison -->
+    <section class="slide" data-title="Clustering comparison" data-section="PBL-II · Unit 3" data-enter="compare" data-speaker="Shaurya Ojha"
+      data-notes="All methods at k = 3. Silhouette is modest everywhere: risk is a continuum, not well separated blobs. Average linkage has the best ARI only because it isolates one outlier and splits the rest in two; single linkage chains everything into one cluster. Our EM implementation matches sklearn exactly.">
+      <div class="kicker rv">Unit 3 · comparative performance analysis</div>
+      <h2 class="rv">Eight clusterings, judged two ways.</h2>
+      <div class="body"><div class="row" style="align-items:stretch">
+        <div class="panel grow rv"><div class="chart" data-chart="cmpTable"></div></div>
+        <div class="col" style="width:420px">
+          <div class="panel rv"><div class="cap">Scratch EM vs sklearn</div><div class="stat"><div class="v c-sky">ARI <span data-b="unit3.scratch_vs_sklearn.gmm_ari" data-f="f2"></span></div><div class="l">log-lik <span data-b="unit3.scratch_vs_sklearn.gmm_scratch_loglik"></span> vs <span data-b="unit3.scratch_vs_sklearn.gmm_sklearn_loglik"></span></div></div></div>
+          <div class="panel rv"><div class="cap">Dissimilarity (average linkage)</div><div class="chart" data-chart="dissim"></div></div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- 15 ─ Personas -->
+    <section class="slide" data-title="Personas" data-section="PBL-II · Unit 3" data-enter="personas" data-speaker="Shaurya Ojha"
+      data-notes="Interpretation. Without ever seeing the label, K-Means finds a high-risk group, and splits the rest into two: engaged achievers and a coasting group with decent grades but low effort (low study hours, late submissions). Coasting students are a natural watch list.">
+      <div class="kicker rv">Unit 3 · result interpretation</div>
+      <h2 class="rv">No labels needed: three student <em>personas</em>.</h2>
+      <div class="body"><div class="chart" data-chart="personas" style="height:560px"></div></div>
+    </section>
+
+    <!-- 16 ─ PCA + dendrogram -->
+    <section class="slide" data-title="PCA & hierarchy" data-section="PBL-II · Unit 3" data-enter="pca" data-speaker="Shaurya Ojha"
+      data-notes="PCA by eigendecomposition of the covariance matrix (matches sklearn). One component carries over 40% of the variance: the academic-performance axis. 10 components reach 90%. Accuracy with only 5 PCs is already about the same as with all 15. Right: Ward's dendrogram, cut where it gives three clusters.">
+      <div class="kicker rv">Unit 3 · latent dimensions &amp; hierarchy</div>
+      <h2 class="rv">How many dimensions does risk really need?</h2>
+      <div class="body"><div class="grid2">
+        <div class="panel rv"><div class="cap">Scree · cumulative explained variance</div><div class="chart" data-chart="scree" style="height:420px"></div>
+          <p class="small" style="margin:8px 0 0"><span data-b="unit3.pca.k90"></span> PCs for 90 % · <span data-b="unit3.pca.k95"></span> for 95 % · PC1 alone <span data-b="unit3.pca.explained_ratio.0" data-f="p0"></span></p></div>
+        <div class="panel rv"><div class="cap">Ward dendrogram · last 24 merges · cut for k = 3</div><div class="chart" data-chart="dendro" style="height:460px"></div></div>
+      </div></div>
+    </section>
+
+    <!-- 17 ─ Factor analysis -->
+    <section class="slide" data-title="Factor analysis" data-section="PBL-II · Unit 3" data-enter="fa" data-speaker="Shaurya Ojha"
+      data-notes="Factor analysis on the 28 Likert items. Cross-validated likelihood levels off at four to five factors, and the four varimax factors are exactly the latent traits the generator used: engagement, support, performance stress, motivation. A clean recovery check.">
+      <div class="kicker rv">Unit 3 · factor analysis</div>
+      <h2 class="rv">28 questions, 4 hidden traits, recovered.</h2>
+      <div class="body"><div class="chart" data-chart="factors" style="height:540px"></div></div>
+    </section>
+
+    <!-- 18 ─ Why sequences -->
+    <section class="slide" data-title="Why sequences" data-section="PBL-II · Unit 4" data-enter="seqs" data-speaker="Aditya Bhutada"
+      data-notes="Unit 4. A survey is a snapshot; a student is a trajectory. Four real trajectories from the cohort: declining, recovering, steady strong, steady struggling. The colour of each dot is the hidden state our HMM decodes.">
+      <div class="kicker rv">Unit 4 · sequential data</div>
+      <h2 class="rv">A survey is a snapshot. A student is a <em>trajectory</em>.</h2>
+      <div class="body"><div class="panel rv"><div class="chart" data-chart="trajectories" style="height:520px"></div></div></div>
+    </section>
+
+    <!-- 19 ─ HMM -->
+    <section class="slide" data-title="The HMM" data-section="PBL-II · Unit 4" data-enter="hmm" data-speaker="Aditya Bhutada"
+      data-notes="Three hidden states. Arrow thickness and flow speed are the learned transition probabilities. Struggling is sticky: about 84% stay struggling next semester, which is the case for early intervention. Emissions are close to diagonal.">
+      <div class="kicker rv">Unit 4 · Baum–Welch from scratch</div>
+      <h2 class="rv">Struggling is sticky: <em><span data-b="unit4.A.0.0" data-f="p0"></span></em> stay there next semester.</h2>
+      <div class="body"><div class="row" style="align-items:stretch">
+        <div class="panel grow rv" style="padding:10px 14px"><div class="chart" data-chart="statemachine" style="height:500px"></div></div>
+        <div class="col" style="width:430px">
+          <div class="panel rv"><div class="cap">Emission matrix B</div><div class="chart" data-chart="emis"></div></div>
+          <div class="panel rv"><div class="cap">Model</div><p style="margin:0;font-size:18px">π, A, B by <b>Baum–Welch</b> with scaling factors · <span data-b="unit4.baum_welch_iterations"></span> iterations · log-lik <span data-b="unit4.loglik"></span></p></div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- 20 ─ Viterbi -->
+    <section class="slide" data-title="Viterbi decoding" data-section="PBL-II · Unit 4" data-enter="viterbi" data-speaker="Aditya Bhutada"
+      data-notes="Viterbi finds the single most likely state path; forward filtering gives P(struggling) after each semester. On the declining student the struggling probability jumps the moment the trajectory turns, which is exactly the early-warning moment.">
+      <div class="kicker rv">Unit 4 · Viterbi &amp; forward filtering</div>
+      <h2 class="rv">Decoding the hidden state, one semester at a time.</h2>
+      <div class="body"><div class="grid2" style="grid-template-columns:1.25fr 1fr">
+        <div class="panel rv"><div class="cap" id="vitTitle">Declining student · SGPA and decoded state</div><div class="chart" data-chart="viterbi" style="height:430px"></div></div>
+        <div class="panel rv"><div class="cap">Filtered P(Struggling | grades so far)</div><div class="chart" data-chart="filtered" style="height:430px"></div></div>
+      </div></div>
+    </section>
+
+    <!-- 21 ─ Verification -->
+    <section class="slide" data-title="HMM verification" data-section="PBL-II · Unit 4" data-enter="hmmcheck" data-speaker="Aditya Bhutada"
+      data-notes="Model selection: BIC picks three hidden states. Verification: our log-likelihood equals hmmlearn's to three decimals, the learned transition matrix is within 0.06 of the true one, and Viterbi recovers the true hidden state about 92% of the time.">
+      <div class="kicker rv">Unit 4 · model selection &amp; verification</div>
+      <h2 class="rv">Right number of states. Right parameters. Right paths.</h2>
+      <div class="body"><div class="row" style="align-items:stretch">
+        <div class="panel rv" style="width:520px"><div class="cap">BIC vs number of hidden states K</div><div class="chart" data-chart="hmmbic" style="height:400px"></div></div>
+        <div class="grow grid2" style="grid-template-columns:1fr 1fr;gap:20px">
+          <div class="panel stat rv"><div class="cap">Log-likelihood</div><div class="v" style="font-size:44px"><span data-b="unit4.loglik"></span></div><div class="l">scratch · hmmlearn: <span data-b="unit4.hmmlearn.loglik_same_params"></span></div></div>
+          <div class="panel stat rv"><div class="cap">Transition recovery</div><div class="v c-sky"><span class="cu" data-b="unit4.truth.A_max_abs_error" data-f="f3"></span></div><div class="l">max |Â − A<sub>true</sub>|</div></div>
+          <div class="panel stat rv"><div class="cap">Viterbi vs true states</div><div class="v c-hi"><span class="cu" data-b="unit4.truth.viterbi_state_accuracy" data-f="p1"></span></div><div class="l">of <span data-b="unit4.n_observations"></span> semesters</div></div>
+          <div class="panel stat rv"><div class="cap">Viterbi agreement with hmmlearn</div><div class="v"><span class="cu" data-b="unit4.hmmlearn.viterbi_agreement" data-f="p0"></span></div><div class="l">identical decoded paths</div></div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- 22 ─ Prediction -->
+    <section class="slide" data-title="Forecasting" data-section="PBL-II · Unit 4" data-enter="forecast" data-speaker="Aditya Bhutada"
+      data-notes="Hold out each senior student's last completed semester. For the band, the HMM ties the Markov chain and persistence on accuracy because emissions are nearly diagonal, but gives a lower log-loss. For SGPA itself the Kalman filter (a linear dynamical system) is best. Bottom: grade history alone predicts this semester's risk with AUC 0.86; the survey reaches 0.95.">
+      <div class="kicker rv">Unit 4 · comparative performance analysis</div>
+      <h2 class="rv">Forecasting next semester against honest baselines.</h2>
+      <div class="body"><div class="grid3">
+        <div class="panel rv"><div class="cap">Next band · accuracy</div><div class="chart" data-chart="fcCat" style="height:330px"></div></div>
+        <div class="panel rv"><div class="cap">Next SGPA · RMSE (lower is better)</div><div class="chart" data-chart="fcCont" style="height:330px"></div></div>
+        <div class="panel rv"><div class="cap">This semester's risk · ROC-AUC</div><div class="chart" data-chart="early" style="height:330px"></div></div>
+      </div></div>
+    </section>
+
+    <!-- 23 ─ Summary -->
+    <section class="slide" data-title="Summary" data-section="Results" data-enter="summary" data-speaker="Aditya Bhutada"
+      data-notes="One line per unit. Every from-scratch implementation is checked against a library, and all self-checks pass.">
+      <div class="kicker rv">Comparative summary</div>
+      <h2 class="rv">Four units, one pipeline, every result checked.</h2>
+      <div class="body"><div class="row" style="align-items:stretch">
+        <div class="panel grow rv"><div class="chart" data-chart="summary"></div></div>
+        <div class="panel rv" style="width:440px"><div class="cap">Self-checks</div><div class="chart" data-chart="checks"></div></div>
+      </div></div>
+    </section>
+
+    <!-- 24 ─ Findings & limits -->
+    <section class="slide" data-title="Findings & limits" data-section="Results" data-enter="findings" data-speaker="Aditya Bhutada"
+      data-notes="Key findings, then limits. The data is synthetic; numbers show the pipeline works and the methods recover known structure, not facts about SRM students. Next step is real longitudinal data with outcomes, collected with consent.">
+      <div class="kicker rv">Result interpretation</div>
+      <h2 class="rv">What we learned, and what we can't claim yet.</h2>
+      <div class="body"><div class="grid2">
+        <div class="panel rv"><div class="cap c-sky">Findings</div><ul style="margin:0;padding-left:22px" class="col gap-s" id="findList"></ul></div>
+        <div class="panel rv"><div class="cap c-ochre">Limits &amp; ethics</div><ul style="margin:0;padding-left:22px" class="col gap-s">
+          <li>The cohort is <b>synthetic</b>; real responses so far are 15 high performers with no outcome label.</li>
+          <li>Self-reported answers carry bias; correlation is not causation.</li>
+          <li>Semester history comes from the generator; the form does not yet ask for per-semester SGPA.</li>
+          <li>A risk score must only trigger an <b>offer of support</b>, never a label or a penalty.</li>
+        </ul></div>
+      </div></div>
+    </section>
+
+    <!-- 25 ─ Demo / Q&A -->
+    <section class="slide" data-title="Demo & Q&A" data-section="Demo" data-enter="end" data-speaker="Shaurya Ojha"
+      data-notes="Switch to the live dashboard (localhost:8501): Predict-a-student page, move attendance and watch the risk and its uncertainty band. Then questions.">
+      <div class="body" style="margin-top:0">
+        <div class="kicker rv">Live demo</div>
+        <h2 class="rv" style="font-size:120px;letter-spacing:-.06em">Thank you.<br><span class="outline">Questions?</span></h2>
+        <div class="row rv" style="margin-top:44px;gap:16px;flex-wrap:wrap">
+          <span class="chip">Dashboard · localhost:8501</span><span class="chip">docker compose up</span><span class="chip">python run_all.py · <span data-b="meta.total_time" data-f="f0"></span> s on a laptop CPU</span>
+          <span class="chip">Next · PBL-III ensembles</span>
+        </div>
+      </div>
+    </section>
+
+    <div id="chrome"><span class="sec" id="secLabel"></span><span class="bar"><i id="progress"></i></span><span class="num" id="counter"></span></div>
+  </div>
+</div>
+<div id="help" aria-hidden="true"><kbd>←</kbd> <kbd>→</kbd> move · <kbd>N</kbd> notes · <kbd>O</kbd> overview · <kbd>F</kbd> fullscreen</div>
+<div id="notes" hidden></div>
+<div id="ov" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="deck-data.js"></script>
+<script src="deck.js"></script>
