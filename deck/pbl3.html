@@ -1,0 +1,430 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EarlyDrop PBL-III Deck</title>
+<meta name="description" content="EarlyDrop: student success and dropout-risk analysis. 21CSC305P Machine Learning, PBL-III review deck, Unit 5: combining models (CART, bagging, boosting, BMA, stacking).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: one 1600×900 stage scaled to the window; slides stack absolutely and are choreographed by deck.js.
+   Single deliberate "Blackboard" look (board green, chalk white, one chalk-yellow highlight), so no light-theme blocks. */
+@font-face { font-family:'Space Grotesk'; font-weight:500; src:local('Space Grotesk Medium'), url('fonts/SpaceGrotesk-500.ttf'); }
+@font-face { font-family:'Space Grotesk'; font-weight:700; src:local('Space Grotesk Bold'), url('fonts/SpaceGrotesk-700.ttf'); }
+@font-face { font-family:'IBM Plex Sans'; font-weight:400; src:local('IBM Plex Sans'), url('fonts/IBMPlexSans-400.ttf'); }
+@font-face { font-family:'IBM Plex Sans'; font-weight:500; src:local('IBM Plex Sans Medium'), url('fonts/IBMPlexSans-500.ttf'); }
+@font-face { font-family:'IBM Plex Sans'; font-weight:600; src:local('IBM Plex Sans SemiBold'), url('fonts/IBMPlexSans-600.ttf'); }
+@font-face { font-family:'IBM Plex Mono'; font-weight:400; src:local('IBM Plex Mono'), url('fonts/IBMPlexMono-400.ttf'); }
+@font-face { font-family:'IBM Plex Mono'; font-weight:500; src:local('IBM Plex Mono Medium'), url('fonts/IBMPlexMono-500.ttf'); }
+
+:root {
+  color-scheme: dark;
+  /* color: board, chalk, one chalk-yellow highlight */
+  --bg:#0f1a16; --panel:#15231e; --panel2:#1b2d26; --line:#26392f; --line2:#34493e;
+  --ink:#ecebe4; --ink2:#c9cfc6; --muted:#8fa197; --muted2:#62756b;
+  --hi:#e3c35a; --coral:#ec7a6c; --ochre:#e3c35a; --sky:#7db4e6;
+  /* data marks (validated for CVD on the board) */
+  --d1:#b3861a; --d2:#3a8ad0; --d3:#cf4b44; --d4:#8f6fd0; --d5:#2f9a74;
+  --s0:#cf4b44; --s1:#b3861a; --s2:#3a8ad0;   /* Struggling · Stable · Strong */
+  --stroke:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'><path d='M2 8 C 40 2, 80 11, 120 6 S 180 3, 198 7' fill='none' stroke='%23e3c35a' stroke-width='3.2' stroke-linecap='round'/></svg>");
+  /* type */
+  --display:'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --body:'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  --mono:'IBM Plex Mono', Consolas, ui-monospace, monospace;
+}
+* { box-sizing:border-box; }
+[hidden] { display:none !important; }
+html, body { height:100%; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); overflow:hidden; -webkit-font-smoothing:antialiased; }
+
+#viewport { position:fixed; inset:0; display:grid; place-items:center; overflow:hidden; background:var(--bg); }
+#bg { position:absolute; inset:0; width:100%; height:100%; }
+#glow { position:absolute; inset:0; pointer-events:none; background:radial-gradient(140% 90% at 50% 40%, transparent 55%, rgba(0,0,0,.4) 100%); }
+#grain { position:absolute; inset:0; pointer-events:none; opacity:.08; mix-blend-mode:screen; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.4 -0.55'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+#stage { position:relative; width:1600px; height:900px; flex:none; transform-origin:center center; }
+
+.slide { position:absolute; inset:0; padding:78px 96px 84px; display:flex; flex-direction:column; visibility:hidden; }
+.slide.active { visibility:visible; }
+.slide > * { min-width:0; }
+
+/* chrome */
+#chrome { position:absolute; left:96px; right:96px; bottom:34px; display:flex; align-items:center; gap:22px; font:500 13px var(--mono); color:var(--muted2); letter-spacing:.08em; pointer-events:none; }
+#chrome .sec { color:var(--hi); text-transform:uppercase; }
+#chrome .bar { flex:1; height:2px; background:var(--line); border-radius:2px; overflow:hidden; }
+#chrome .bar i { display:block; height:100%; width:0; background:var(--hi); transition:width .7s cubic-bezier(.6,0,.2,1); }
+#chrome .num { font-variant-numeric:tabular-nums; }
+#brand { position:absolute; left:96px; top:34px; font:700 18px var(--display); letter-spacing:-.03em; color:var(--ink); display:flex; gap:12px; align-items:center; pointer-events:none; }
+#brand span { font:500 12px var(--mono); color:var(--muted2); letter-spacing:.14em; }
+#brand b { width:9px; height:9px; border-radius:50%; background:var(--hi); }
+
+/* type scale: 13 / 16 / 20 / 26 / 40 / 64 / 140 */
+.kicker { font:500 15px var(--mono); letter-spacing:.2em; text-transform:uppercase; color:var(--hi); display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+.kicker::before { content:""; width:34px; height:2px; border-radius:2px; background:var(--hi); }
+h1, h2, h3 { font-family:var(--display); margin:0; text-wrap:balance; letter-spacing:-.035em; }
+h2 { font-size:64px; line-height:1.0; font-weight:700; }
+h2 em { font-style:normal; color:var(--ink); padding-bottom:.08em; background:var(--stroke) no-repeat left bottom / 100% .16em; }
+h3 { font-size:26px; font-weight:600; letter-spacing:-.02em; }
+p, li { font-size:20px; line-height:1.55; color:var(--ink2); }
+.lead { font-size:24px; line-height:1.5; color:var(--ink2); max-width:1060px; margin:22px 0 0; }
+.small { font-size:16px; color:var(--muted); }
+.mono { font-family:var(--mono); }
+.muted { color:var(--muted); }
+.c-hi { color:var(--hi); } .c-lilac { color:#b9a6e3; } .c-ochre { color:var(--ochre); } .c-coral { color:var(--coral); } .c-sky { color:var(--sky); }
+.num { font-variant-numeric:tabular-nums; }
+
+.row { display:flex; gap:28px; } .col { display:flex; flex-direction:column; gap:18px; }
+.grow { flex:1; min-width:0; } .mt { margin-top:auto; } .gap-s { gap:14px; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:28px; } .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; } .grid4 { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+.body { flex:1; display:flex; flex-direction:column; justify-content:center; min-height:0; margin-top:34px; }
+
+.panel { position:relative; border:1px solid var(--line); border-radius:16px; padding:24px 26px; background:var(--panel); }
+.panel h3 { margin-bottom:8px; }
+.panel .cap { font:500 13px var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--muted2); margin-bottom:10px; }
+.stat .v { font:700 64px/1 var(--display); letter-spacing:-.04em; color:var(--ink); font-variant-numeric:tabular-nums; }
+.stat .l { font-size:17px; color:var(--muted); margin-top:10px; }
+.stat .v .small { font:400 17px var(--body); letter-spacing:0; color:var(--muted); }
+.chip { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line2); border-radius:6px; padding:7px 14px; font:500 15px var(--mono); color:var(--ink2); background:var(--panel); }
+.badge { display:inline-flex; gap:10px; align-items:center; padding:8px 16px; border-radius:6px; border:1px dashed rgba(227,195,90,.6); color:var(--hi); font:500 14px var(--mono); letter-spacing:.08em; }
+.badge i { width:8px; height:8px; border-radius:50%; background:var(--hi); }
+.formula { font:500 24px var(--mono); color:var(--ink); background:var(--panel2); border:1px dashed var(--line2); border-radius:12px; padding:16px 22px; }
+.dot { display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:8px; vertical-align:middle; }
+
+table.t { width:100%; border-collapse:collapse; font-size:18px; }
+table.t th { text-align:left; font:500 13px var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--muted2); padding:10px 12px; border-bottom:1px solid var(--line); }
+table.t td { padding:11px 12px; border-bottom:1px solid rgba(27,37,64,.6); color:var(--ink2); font-variant-numeric:tabular-nums; }
+table.t td.n, table.t th.n { text-align:right; font-family:var(--mono); }
+table.t tr.best td { color:var(--ink); background:rgba(227,195,90,.07); }
+table.t tr.best td:first-child { box-shadow:inset 3px 0 0 var(--hi); }
+
+.chart { position:relative; min-height:0; }
+.chart svg { display:block; width:100%; height:100%; overflow:visible; }
+
+/* title slide */
+.hero-title { font:700 210px/.84 var(--display); letter-spacing:-.07em; margin:22px 0 26px; color:var(--ink); align-self:flex-start; padding-bottom:.2em; background:var(--stroke) no-repeat left bottom / 100% .14em; }
+.hero-title .ch { display:inline-block; }
+.team { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:auto; }
+.team .m { border-top:1px solid var(--line); padding-top:14px; }
+.team .m b { display:block; font:600 21px var(--display); color:var(--ink); letter-spacing:-.01em; }
+.team .m span { font:400 14px var(--mono); color:var(--muted2); }
+
+.divider h2 { font-size:150px; line-height:.9; letter-spacing:-.06em; }
+.divider .units { display:flex; gap:24px; margin-top:42px; }
+.outline { color:transparent; -webkit-text-stroke:1.5px var(--hi); }
+
+/* overlays */
+#notes { position:fixed; left:50%; bottom:22px; transform:translateX(-50%); width:min(980px,calc(100vw - 32px)); max-height:42vh; overflow:auto; padding:20px 24px; border-radius:18px; border:1px solid var(--line); background:rgba(15,26,22,.97); backdrop-filter:blur(16px); z-index:20; font-size:17px; line-height:1.55; color:var(--ink2); }
+#notes .who { font:500 13px var(--mono); color:var(--hi); letter-spacing:.14em; text-transform:uppercase; margin-bottom:6px; }
+#help { position:fixed; right:18px; top:16px; z-index:20; font:500 12px var(--mono); color:var(--muted2); letter-spacing:.06em; }
+#help kbd { border:1px solid var(--line); border-radius:6px; padding:2px 6px; color:var(--muted); font-family:var(--mono); }
+body.overview #stage .slide { visibility:visible; }
+body.overview #chrome, body.overview #brand { display:none; }
+#ov { position:fixed; inset:0; z-index:30; overflow:auto; background:rgba(15,26,22,.98); padding:28px 16px; display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; align-content:start; }
+#ov button { all:unset; cursor:pointer; border:1px solid var(--line); border-radius:14px; padding:14px 16px; background:var(--panel); color:var(--ink2); font:500 16px var(--display); display:flex; flex-direction:column; gap:6px; }
+#ov button:hover, #ov button:focus-visible { border-color:var(--hi); outline:none; }
+#ov button small { font:500 12px var(--mono); color:var(--muted2); letter-spacing:.1em; }
+#ov button.cur { border-color:var(--hi); background:var(--panel2); }
+button:focus-visible { outline:2px solid var(--hi); outline-offset:2px; }
+
+/* print / PDF: every slide on its own 16:9 page, final state */
+body.print { overflow:visible; }
+body.print #viewport { position:static; display:block; }
+body.print #bg, body.print #glow, body.print #grain, body.print #help, body.print #chrome { display:none; }
+body.print #stage { transform:none !important; width:1600px; height:auto; }
+body.print .slide { position:relative; visibility:visible; width:1600px; height:900px; page-break-after:always; break-after:page; overflow:hidden;
+  background:var(--bg); }
+body.print .slide:last-of-type { break-after:auto; page-break-after:auto; }
+@page { size:1600px 900px; margin:0; }
+@media (max-width: 700px) { #help { display:none; } }
+</style>
+
+<div id="viewport">
+  <canvas id="bg" aria-hidden="true"></canvas>
+  <div id="glow"></div>
+  <div id="grain"></div>
+  <div id="stage">
+    <div id="brand"><b></b>EarlyDrop <span>21CSC305P · E2 · PBL-III</span></div>
+
+    <!-- 1 ─ Title -->
+    <section class="slide" data-title="EarlyDrop · PBL-III" data-section="Review" data-enter="title" data-speaker="Shaurya Ojha"
+      data-notes="PBL-III covers Unit 5, combining models. Same cohort, same target, same folds as PBL-I. The question for this review: does a committee of models flag at-risk students better than the best single model, and why or why not?">
+      <div class="kicker rv">Machine Learning · Project Review 3 · Unit 5</div>
+      <h1 class="hero-title" id="heroTitle">Ensembles</h1>
+      <p class="lead rv" style="font-size:30px;max-width:1180px;color:var(--ink)">EarlyDrop, PBL-III. Combining models to flag academic risk: trees, bagging, boosting, Bayesian model averaging and stacking.</p>
+      <div class="row rv" style="margin-top:26px;gap:14px;align-items:center">
+        <span class="badge"><i></i>SYNTHETIC COHORT · n = <span data-b="meta.n_synthetic"></span> · SAME FOLDS AS PBL-I</span>
+        <span class="chip">Faculty · Dr. Santhiya Parivallal</span>
+      </div>
+      <div class="team">
+        <div class="m rv"><b>Yash Arun Mulajkar</b><span>RA2411003011562</span></div>
+        <div class="m rv"><b>Bignesh Sahu</b><span>RA2411003011563</span></div>
+        <div class="m rv"><b>Shaurya Ojha</b><span>RA2411003011565</span></div>
+        <div class="m rv"><b>Aditya Bhutada</b><span>RA2411003011607</span></div>
+      </div>
+    </section>
+
+    <!-- 2 ─ Problem -->
+    <section class="slide" data-title="The question" data-section="Problem" data-enter="problem" data-speaker="Yash Arun Mulajkar"
+      data-notes="Recap: EarlyDrop flags students whose end-semester SGPA will fall below 6.5, from a mid-semester survey. PBL-I found logistic regression at about 0.95 CV AUC. Unit 5 asks a sharper question: can combining models beat that, and when does combining help at all?">
+      <div class="kicker rv">Problem identification</div>
+      <h2 class="rv">Can a <em>committee</em> of models beat the best single one?</h2>
+      <div class="body"><div class="grid3">
+        <div class="panel rv"><div class="cap">Target (unchanged)</div><p style="margin:0">Flag students whose <b>end-semester SGPA will fall below 6.5</b>, from mid-semester survey answers.</p>
+          <div class="stat" style="margin-top:22px"><div class="v"><span class="cu" data-b="unit5.base_rate" data-f="p1"></span></div><div class="l">of students are at risk</div></div></div>
+        <div class="panel rv"><div class="cap">Bar to beat · PBL-I</div><p style="margin:0">Logistic regression, stratified 5-fold CV.</p>
+          <div class="stat" style="margin-top:22px"><div class="v c-hi"><span class="cu" data-b="unit2.classification.cv5.0.roc_auc_mean" data-f="f3"></span></div><div class="l">CV ROC-AUC, the best of seven Unit 2 classifiers</div></div></div>
+        <div class="panel rv"><div class="cap">Unit 5 questions</div><ul style="margin:0;padding-left:22px" class="col gap-s">
+          <li>Does averaging or boosting weak learners lift accuracy?</li><li>Is any gain <b>statistically</b> real?</li><li>Why do ensembles help, when they do?</li></ul></div>
+      </div></div>
+    </section>
+
+    <!-- 3 ─ Dataset & protocol -->
+    <section class="slide" data-title="Dataset & protocol" data-section="Dataset" data-enter="protocol" data-speaker="Yash Arun Mulajkar"
+      data-notes="Same cleaned cohort as PBL-I and II: 400 synthetic students in the live form's schema, calibrated on the 15 real responses, 15 selected features. Every model sees the identical 5 folds used in Unit 2, so numbers are directly comparable, plus a stratified 25% held-out test set for curves and ROC. Significance uses repeated 5-fold CV three times with the Nadeau–Bengio correction.">
+      <div class="kicker rv">Dataset selection &amp; evaluation protocol</div>
+      <h2 class="rv">Same students, same features, same folds.</h2>
+      <div class="body"><div class="grid4">
+        <div class="panel stat rv"><div class="cap">Cohort</div><div class="v"><span data-b="unit5.n"></span></div><div class="l">synthetic students in the live form's 50-column schema, calibrated on <span data-b="meta.n_real"></span> real responses</div></div>
+        <div class="panel stat rv"><div class="cap">Features</div><div class="v">15</div><div class="l">grades, attendance, backlogs, study habits, motivation, stress</div></div>
+        <div class="panel stat rv"><div class="cap">Held-out test</div><div class="v"><span data-b="unit5.n_test"></span></div><div class="l">stratified 25 % split for curves, ROC and bias–variance (train <span data-b="unit5.n_train"></span>)</div></div>
+        <div class="panel stat rv"><div class="cap">Models compared</div><div class="v"><span id="nModels"></span></div><div class="l">5 single models and 12 ensembles, 6 written from scratch</div></div>
+      </div>
+      <div class="panel rv" style="margin-top:26px"><div class="cap">Protocol</div>
+        <p style="margin:0">Stratified 5-fold CV with seed 42 (the <b>same folds as Unit 2</b>) · out-of-fold ROC-AUC, accuracy, recall, Brier, log-loss · significance by repeated 5 × 3 CV with the <b>Nadeau–Bengio corrected t-test</b> · every from-scratch model is checked against scikit-learn.</p></div>
+      </div>
+    </section>
+
+    <!-- 4 ─ Unit 5 map -->
+    <section class="slide divider" data-title="Unit 5 map" data-section="Unit 5" data-enter="divider" data-speaker="Bignesh Sahu"
+      data-notes="The six Unit 5 topics from the course plan and where each one lives in our pipeline. CART, bagging, random forests, AdaBoost, gradient boosting and Bayesian model averaging are implemented from scratch.">
+      <div class="body" style="margin-top:0">
+        <div class="kicker rv">Unit 5 · combining models</div>
+        <h2 class="rv"><span class="outline">PBL-III</span><br>Six ways to combine</h2>
+        <div class="units" style="flex-wrap:wrap">
+          <span class="chip rv">CART · Gini · pruning</span><span class="chip rv">Bagging · random forest · OOB</span><span class="chip rv">AdaBoost · exponential loss</span>
+          <span class="chip rv">Gradient boosting · shrinkage</span><span class="chip rv">Bayesian model averaging</span><span class="chip rv">Generalized additive models</span>
+          <span class="chip rv">Adaptive basis functions · MLP</span><span class="chip rv">Voting · stacking</span>
+        </div>
+        <p class="small rv" style="margin-top:30px">From scratch: CART, bagging, random forest, AdaBoost, gradient boosting, BMA. Library: extra trees, histogram GBM, GAM, MLP, voting, stacking.</p>
+      </div>
+    </section>
+
+    <!-- 5 ─ CART -->
+    <section class="slide" data-title="CART" data-section="Unit 5 · Trees" data-enter="tree" data-speaker="Bignesh Sahu"
+      data-notes="Our from-scratch CART, cut at depth 3 for display. Each split is the one that lowers weighted Gini impurity the most. The root splits on internal marks at 58.5, exactly as sklearn does. On the right branch, the next question is attendance below 73 percent, next to SRM's 75 percent rule. Leaves show the share at risk.">
+      <div class="kicker rv">Unit 5 · classification and regression trees</div>
+      <h2 class="rv">A tree asks one question at a time.</h2>
+      <div class="body"><div class="row" style="align-items:stretch">
+        <div class="panel grow rv" style="padding:16px 18px"><div class="cap">Scratch CART on the training set · depth 3 · leaf border coral = predict at risk</div><div class="chart" data-chart="tree" style="height:500px"></div></div>
+        <div class="col" style="width:380px">
+          <div class="formula rv" style="font-size:19px">Gini(t) = 1 − Σ<sub>k</sub> p<sub>k</sub>²<br>Δ = G(t) − (n<sub>L</sub>/n)G(L) − (n<sub>R</sub>/n)G(R)</div>
+          <div class="panel rv"><div class="cap">Greedy, exhaustive</div><p style="margin:0;font-size:18px">Every feature, every mid-point threshold, keep the split with the largest Δ. Recurse until leaves are pure.</p></div>
+          <div class="panel rv"><div class="cap">Check vs sklearn (depth 4)</div><p style="margin:0;font-size:18px">Same root split · <b class="c-sky"><span data-b="unit5.cart.scratch_vs_sklearn_depth4.test_agreement" data-f="p0"></span></b> identical test predictions</p></div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- 6 ─ Overfitting & pruning -->
+    <section class="slide" data-title="Tree depth & pruning" data-section="Unit 5 · Trees" data-enter="depth" data-speaker="Bignesh Sahu"
+      data-notes="Grow the tree deeper and training accuracy climbs to 100 percent while cross-validated accuracy stalls and falls: a single tree is a high-variance learner. Cost-complexity pruning chooses alpha by CV and collapses the tree to a few leaves; that helps AUC but a single tree still trails linear models. This variance is exactly what ensembles attack.">
+      <div class="kicker rv">Unit 5 · over-fitting and cost-complexity pruning</div>
+      <h2 class="rv">One tree <em>memorises</em>. That is the problem ensembles solve.</h2>
+      <div class="body"><div class="row" style="align-items:stretch">
+        <div class="panel grow rv"><div class="cap">Accuracy vs max depth</div><div class="chart" data-chart="depth" style="height:460px"></div></div>
+        <div class="col" style="width:420px">
+          <div class="formula rv" style="font-size:20px">R<sub>α</sub>(T) = R(T) + α · |leaves(T)|</div>
+          <div class="panel stat rv"><div class="cap">Pruning (α by 5-fold CV)</div><div class="v"><span data-b="unit5.cart.pruning.full_leaves"></span> → <span class="c-hi" data-b="unit5.cart.pruning.leaves"></span><span class="small"> leaves</span></div><div class="l">α = <span data-b="unit5.cart.pruning.ccp_alpha" data-f="f4"></span></div></div>
+          <div class="panel rv"><div class="cap">5-fold CV ROC-AUC</div><p style="margin:0">full tree <b class="c-coral" id="aucTree"></b> · pruned <b class="c-hi" id="aucPruned"></b> · logistic <b class="c-sky" id="aucLR"></b></p></div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- 7 ─ Bagging & RF -->
+    <section class="slide" data-title="Bagging & random forest" data-section="Unit 5 · Bagging" data-enter="oob" data-speaker="Bignesh Sahu"
+      data-notes="Bagging trains each tree on a bootstrap sample and averages. About 37 percent of students are left out of each sample, which gives a free out-of-bag error estimate. A random forest also restricts each split to a random 3 of the 15 features, which decorrelates the trees: average pairwise correlation drops, and the average of less correlated trees has lower variance.">
+      <div class="kicker rv">Unit 5 · bagging and random forests (scratch)</div>
+      <h2 class="rv">Average many noisy trees and the noise cancels.</h2>
+      <div class="body"><div class="row" style="align-items:stretch">
+        <div class="panel grow rv"><div class="cap">Out-of-bag error as trees are added</div><div class="chart" data-chart="oob" style="height:450px"></div></div>
+        <div class="col" style="width:440px">
+          <div class="formula rv" style="font-size:19px">f̂<sub>bag</sub>(x) = (1/B) Σ<sub>b</sub> f̂<sub>b</sub>(x)<br>Var = ρσ² + (1 − ρ)σ²/B</div>
+          <div class="panel rv"><div class="cap">Tree-to-tree correlation ρ</div><div class="row" style="gap:26px"><div class="stat"><div class="v" style="font-size:48px"><span data-b="unit5.forest.tree_correlation_bagging" data-f="f2"></span></div><div class="l">bagging</div></div><div class="stat"><div class="v c-sky" style="font-size:48px"><span data-b="unit5.forest.tree_correlation_rf" data-f="f2"></span></div><div class="l">random forest (√15 features)</div></div></div></div>
+          <div class="panel rv"><div class="cap">OOB accuracy</div><p style="margin:0">scratch RF <b class="c-hi"><span data-b="unit5.forest.oob_acc_rf" data-f="p1"></span></b> · sklearn RF <b><span data-b="unit5.forest.oob_acc_sklearn_rf" data-f="p1"></span></b></p></div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- 8 ─ Decision surfaces -->
+    <section class="slide" data-title="Decision surfaces" data-section="Unit 5 · Bagging" data-enter="surfaces" data-speaker="Bignesh Sahu"
+      data-notes="Four models trained on just two features, attendance and internal marks, so we can see the risk surface. Brighter red means higher predicted risk; light dots are at-risk students. One tree gives a blocky staircase. The forest and gradient boosting give smoother, graded surfaces. AdaBoost is a sum of axis-aligned stumps.">
+      <div class="kicker rv">Unit 5 · what the models learn</div>
+      <h2 class="rv">Staircase vs smooth: two features, four learners.</h2>
+      <div class="body"><div class="chart rv" data-chart="surfaces" style="height:540px"></div>
+        <p class="small rv" style="margin:12px 0 0">Colour = predicted P(at risk) from dark (0) to red (1) · bright dots = students actually at risk · trained on attendance and internal marks only.</p></div>
+    </section>
+
+    <!-- 9 ─ AdaBoost -->
+    <section class="slide" data-title="AdaBoost" data-section="Unit 5 · Boosting" data-enter="ada" data-speaker="Shaurya Ojha"
+      data-notes="Boosting builds models in sequence. AdaBoost re-weights students the previous stumps got wrong. The first stump is internal marks at 58.5 with a weighted error of 0.10, so its vote is alpha = ln(0.9/0.1) = 2.2. Training error falls under the exponential-loss bound; test error flattens after a few dozen rounds. Our implementation makes the same predictions as sklearn on every test student.">
+      <div class="kicker rv">Unit 5 · boosting (AdaBoost from scratch)</div>
+      <h2 class="rv">Each new stump focuses on the students the last ones <em>missed</em>.</h2>
+      <div class="body"><div class="row" style="align-items:stretch">
+        <div class="panel grow rv"><div class="cap">Error vs boosting rounds · 200 decision stumps</div><div class="chart" data-chart="ada" style="height:450px"></div></div>
+        <div class="col" style="width:460px">
+          <div class="formula rv" style="font-size:18px">ε<sub>m</sub> = Σ w<sub>n</sub> I(y<sub>m</sub>(x<sub>n</sub>) ≠ t<sub>n</sub>) / Σ w<sub>n</sub><br>α<sub>m</sub> = ln((1 − ε<sub>m</sub>)/ε<sub>m</sub>)<br>w<sub>n</sub> ← w<sub>n</sub> exp(α<sub>m</sub> I(miss))</div>
+          <div class="panel rv"><div class="cap">First stump</div><p style="margin:0;font-size:18px"><span id="stump1"></span></p></div>
+          <div class="panel rv"><div class="cap">Check vs sklearn (SAMME)</div><p style="margin:0;font-size:18px"><b class="c-sky"><span data-b="unit5.adaboost.scratch_vs_sklearn.test_agreement" data-f="p0"></span></b> same test predictions · decision correlation <span data-b="unit5.adaboost.scratch_vs_sklearn.decision_corr" data-f="f3"></span></p></div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- 10 ─ Gradient boosting -->
+    <section class="slide" data-title="Gradient boosting" data-section="Unit 5 · Boosting" data-enter="shrink" data-speaker="Shaurya Ojha"
+      data-notes="Gradient boosting fits each new tree to the negative gradient of the log-loss, the residual y minus p, then sets each leaf with one Newton step. The learning rate nu shrinks every step. With nu = 1 the test loss bottoms out after a handful of trees and then climbs: over-fitting. Small nu needs more trees but reaches a lower test loss. Our version matches sklearn to within 0.004 in probability.">
+      <div class="kicker rv">Unit 5 · gradient boosting (scratch)</div>
+      <h2 class="rv">Small steps, more trees, less over-fitting.</h2>
+      <div class="body"><div class="row" style="align-items:stretch">
+        <div class="panel grow rv"><div class="cap">Test log-loss vs iterations for four learning rates ν · clipped at 0.75</div><div class="chart" data-chart="shrink" style="height:450px"></div></div>
+        <div class="col" style="width:460px">
+          <div class="formula rv" style="font-size:18px">r<sub>n</sub> = y<sub>n</sub> − σ(F(x<sub>n</sub>))<br>γ<sub>leaf</sub> = Σ r / Σ p(1 − p)<br>F ← F + ν · γ<sub>leaf(x)</sub></div>
+          <div class="panel rv"><div class="cap">Best iteration</div><div class="chart" id="shrinkTable"></div></div>
+          <div class="panel rv"><div class="cap">Check vs sklearn</div><p style="margin:0;font-size:18px">max |Δp| = <b class="c-sky"><span data-b="unit5.gboost.scratch_vs_sklearn.max_abs_proba_diff" data-f="f4"></span></b> · AUC <span data-b="unit5.gboost.scratch_vs_sklearn.test_auc_scratch" data-f="f3"></span> vs <span data-b="unit5.gboost.scratch_vs_sklearn.test_auc_sklearn" data-f="f3"></span></p></div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- 11 ─ BMA -->
+    <section class="slide" data-title="Bayesian model averaging" data-section="Unit 5 · Averaging" data-enter="bma" data-speaker="Shaurya Ojha"
+      data-notes="BMA treats the model itself as unknown. We enumerate all 64 subsets of six feature blocks, fit a Bayesian logistic regression to each (our Unit 2 code), and weight each by its Laplace-approximated evidence. Grades and attendance are in essentially every probable model; study habits almost never. Bishop's point in 14.1: BMA is not model combination; as data grows the posterior concentrates on one model, and the right chart shows exactly that.">
+      <div class="kicker rv">Unit 5 · Bayesian model averaging (scratch)</div>
+      <h2 class="rv">Average over <em>64</em> models, weighted by evidence.</h2>
+      <div class="body"><div class="grid3" style="grid-template-columns:1fr 1.25fr 1fr">
+        <div class="panel rv"><div class="cap">Posterior inclusion probability</div><div class="chart" data-chart="bmaInc" style="height:300px"></div>
+          <div class="formula" style="font-size:15px;margin-top:10px">p(y|x,D) = Σ<sub>M</sub> p(y|x,M,D) p(M|D)</div></div>
+        <div class="panel rv"><div class="cap">Most probable models · Laplace evidence</div><div class="chart" data-chart="bmaTop"></div>
+          <p class="small" style="margin:12px 0 0">Effective number of models <b class="c-hi"><span data-b="unit5.bma.effective_models" data-f="f1"></span></b> · the full model ranks <span data-b="unit5.bma.full_model_rank"></span> of 64</p></div>
+        <div class="panel rv"><div class="cap">The posterior concentrates as N grows</div><div class="chart" data-chart="bmaConc" style="height:380px"></div></div>
+      </div></div>
+    </section>
+
+    <!-- 12 ─ GAM -->
+    <section class="slide" data-title="GAM" data-section="Unit 5 · Additive" data-enter="gam" data-speaker="Shaurya Ojha"
+      data-notes="A generalized additive model keeps the logistic link but replaces each linear term with a smooth curve, here a cubic B-spline with five knots, fitted with an L2 penalty. The curves are readable. For internal marks and attendance, risk is high and flat at the bottom, falls steeply through the middle range and levels off at the top: a threshold shape, which is why the tree splits near 58 percent marks and 73 percent attendance. The GAM is still an additive model, so it stays as easy to explain as logistic regression.">
+      <div class="kicker rv">Unit 5 · generalized additive models</div>
+      <h2 class="rv">One smooth curve per feature, still readable.</h2>
+      <div class="body"><div class="row" style="align-items:stretch">
+        <div class="grow rv"><div class="chart" data-chart="gam" style="height:520px"></div></div>
+        <div class="col" style="width:380px">
+          <div class="formula rv" style="font-size:19px">logit p(x) = β<sub>0</sub> + Σ<sub>j</sub> f<sub>j</sub>(x<sub>j</sub>)</div>
+          <div class="panel rv"><div class="cap">Basis</div><p style="margin:0;font-size:18px">cubic B-splines, 5 knots → <span data-b="unit5.gam.basis_per_feature"></span> basis functions per feature, L2 penalty C = <span data-b="unit5.gam.C"></span></p></div>
+          <div class="panel stat rv"><div class="cap">Held-out ROC-AUC</div><div class="v c-hi"><span data-b="unit5.gam.test.roc_auc" data-f="f3"></span></div><div class="l">partial log-odds, centred on the training mean</div></div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- 13 ─ Stacking -->
+    <section class="slide" data-title="Stacking" data-section="Unit 5 · Combining" data-enter="stack" data-speaker="Shaurya Ojha"
+      data-notes="Stacking learns how to combine. Five base models produce out-of-fold probabilities, and a logistic regression learns weights on top. It leans on logistic regression, the forest and boosting. The base predictions are highly correlated, 0.81 to 0.96, which limits how much any combination can add: you can only average away errors that differ.">
+      <div class="kicker rv">Unit 5 · voting and stacking</div>
+      <h2 class="rv">Stacking learns the weights. Correlated models leave little to learn.</h2>
+      <div class="body"><div class="grid2">
+        <div class="panel rv"><div class="cap">Meta-learner weights (logistic on base probabilities)</div><div class="chart" data-chart="stackW" style="height:300px"></div>
+          <p class="small" style="margin:12px 0 0">Soft voting averages the same probabilities with equal weights.</p></div>
+        <div class="panel rv"><div class="cap">Correlation of out-of-fold base predictions</div><div class="chart" data-chart="corr"></div></div>
+      </div></div>
+    </section>
+
+    <!-- 14 ─ Verification -->
+    <section class="slide" data-title="Scratch vs library" data-section="Verification" data-enter="verify" data-speaker="Aditya Bhutada"
+      data-notes="Every from-scratch model is checked against its library counterpart. CART picks the same splits; full-depth trees differ slightly only where two splits tie exactly. AdaBoost is identical to sklearn's SAMME. Gradient boosting matches to four decimals. Four new self-checks in run_all.py fail loudly if any of this breaks.">
+      <div class="kicker rv">Implementation · verification</div>
+      <h2 class="rv">Written from scratch, checked against scikit-learn.</h2>
+      <div class="body"><div class="row" style="align-items:stretch">
+        <div class="panel grow rv"><div class="chart" data-chart="verify"></div></div>
+        <div class="panel rv" style="width:440px"><div class="cap">Pipeline self-checks</div><div class="chart" data-chart="checks"></div></div>
+      </div></div>
+    </section>
+
+    <!-- 15 ─ Comparison -->
+    <section class="slide" data-title="Comparison" data-section="Comparison" data-enter="cmp" data-speaker="Aditya Bhutada"
+      data-notes="All 17 models on the same five folds, sorted by mean ROC-AUC. Two clear tiers. Single trees sit far below at 0.82 to 0.86. Everything that averages or boosts trees jumps to about 0.94 to 0.95. But the top of the table is a tight cluster: BMA, logistic regression, stacking and the random forest are within the fold-to-fold noise of each other.">
+      <div class="kicker rv">Comparative performance analysis</div>
+      <h2 class="rv">Seventeen models, same five folds.</h2>
+      <div class="body"><div class="panel rv" style="padding:18px 22px"><div class="cap">5-fold CV ROC-AUC (mean ± sd across folds)</div><div class="chart" data-chart="cmp" style="height:580px"></div></div></div>
+    </section>
+
+    <!-- 16 ─ Significance & ROC -->
+    <section class="slide" data-title="Is it real?" data-section="Comparison" data-enter="sig" data-speaker="Aditya Bhutada"
+      data-notes="Is any ensemble's edge real? Repeated 5-fold CV three times, and the Nadeau–Bengio corrected t-test, which accounts for overlapping training sets. No ensemble differs significantly from logistic regression; the differences are a few thousandths of AUC. The ROC curves on the held-out test set overlap, except the single tree.">
+      <div class="kicker rv">Comparative analysis · significance</div>
+      <h2 class="rv">The top of the table is a <em>tie</em>.</h2>
+      <div class="body"><div class="grid2" style="grid-template-columns:1.05fr 1fr">
+        <div class="panel rv"><div class="cap">Repeated 5 × 3 CV · corrected resampled t-test</div><div class="chart" data-chart="sig"></div>
+          <p class="small" style="margin:14px 0 0">p &gt; 0.05 everywhere: no ensemble is significantly better or worse than logistic regression.</p></div>
+        <div class="panel rv"><div class="cap">ROC on the held-out test set</div><div class="chart" data-chart="roc" style="height:390px"></div></div>
+      </div></div>
+    </section>
+
+    <!-- 17 ─ Bias-variance -->
+    <section class="slide" data-title="Why ensembles work" data-section="Interpretation" data-enter="bv" data-speaker="Aditya Bhutada"
+      data-notes="Why the two tiers? Train each model on 30 bootstrap copies of the training set and split its test Brier score exactly into bias squared plus variance. A full-depth tree has large variance; bagging cuts it and the random forest removes almost all of it. Logistic regression already has both low bias and low variance on this data, so there is little left for an ensemble to fix.">
+      <div class="kicker rv">Result interpretation · bias–variance</div>
+      <h2 class="rv">Ensembles kill <em>variance</em>. Logistic had little to begin with.</h2>
+      <div class="body"><div class="row" style="align-items:stretch">
+        <div class="panel grow rv"><div class="cap">Brier score = bias² + variance · 30 bootstrap training sets, held-out test</div><div class="chart" data-chart="bv" style="height:420px"></div></div>
+        <div class="col" style="width:400px">
+          <div class="formula rv" style="font-size:19px">E[(p̂ − y)²] = (p̄ − y)² + E[(p̂ − p̄)²]</div>
+          <div class="panel rv"><div class="cap">Variance</div><p style="margin:0">full tree <b class="c-coral" id="varTree"></b> → random forest <b class="c-sky" id="varRF"></b></p></div>
+          <div class="panel rv"><div class="cap">Reading</div><p style="margin:0;font-size:18px">Averaging fixes high-variance learners. It cannot fix bias, and boosting attacks bias at the price of some variance.</p></div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- 18 ─ Importance & threshold -->
+    <section class="slide" data-title="What drives risk" data-section="Interpretation" data-enter="imp" data-speaker="Aditya Bhutada"
+      data-notes="Three different importance measures agree: internal marks and attendance dominate, the same two signals PBL-I found by correlation and BMA found by evidence. For deployment, early warning prefers recall, so lower the threshold of the best model: at 0.3 it catches about nine in ten at-risk students.">
+      <div class="kicker rv">Result interpretation · features and threshold</div>
+      <h2 class="rv">Three importance measures, one story.</h2>
+      <div class="body"><div class="grid2" style="grid-template-columns:1.35fr 1fr">
+        <div class="panel rv"><div class="cap">Top features</div><div class="chart" data-chart="imp"></div></div>
+        <div class="panel rv"><div class="cap">Early-warning threshold · <span id="bestName"></span></div><div class="chart" data-chart="thr"></div>
+          <p class="small" style="margin:14px 0 0">A flag only triggers an <b>offer of support</b>, so a missed student costs more than an extra conversation.</p></div>
+      </div></div>
+    </section>
+
+    <!-- 19 ─ Findings -->
+    <section class="slide" data-title="Findings & limits" data-section="Results" data-enter="findings" data-speaker="Aditya Bhutada"
+      data-notes="Key findings, then limits. The headline is honest: ensembles turn weak trees into strong models, but on this cohort they tie a well-specified logistic regression. The data is synthetic, and its generator builds the survey answers additively from a few latent traits; real data with interactions may favour trees and boosting more.">
+      <div class="kicker rv">Result interpretation</div>
+      <h2 class="rv">What combining models bought us, and what it didn't.</h2>
+      <div class="body"><div class="grid2">
+        <div class="panel rv"><div class="cap c-sky">Findings</div><ul style="margin:0;padding-left:22px" class="col gap-s" id="findList"></ul></div>
+        <div class="panel rv"><div class="cap c-ochre">Limits &amp; next steps</div><ul style="margin:0;padding-left:22px" class="col gap-s">
+          <li>The cohort is <b>synthetic</b>: its generator builds answers additively from a few latent traits, which suits logistic regression.</li>
+          <li>400 students and 15 features: small data limits how much complex ensembles can learn.</li>
+          <li>Real responses with outcome labels may contain interactions where trees and boosting win.</li>
+          <li>Prefer the simpler model when scores tie: logistic regression or BMA are easier to explain to a student.</li>
+        </ul></div>
+      </div></div>
+    </section>
+
+    <!-- 20 ─ Demo / Q&A -->
+    <section class="slide" data-title="Demo & Q&A" data-section="Demo" data-enter="end" data-speaker="Shaurya Ojha"
+      data-notes="Switch to the dashboard, Unit 5 page (localhost:8501/unit-5): the comparison table, then the live tab, change the number of trees and depth and watch CV AUC move. Then questions.">
+      <div class="body" style="margin-top:0">
+        <div class="kicker rv">Live demo</div>
+        <h2 class="rv" style="font-size:120px;letter-spacing:-.06em">Thank you.<br><span class="outline">Questions?</span></h2>
+        <div class="row rv" style="margin-top:44px;gap:16px;flex-wrap:wrap">
+          <span class="chip">Dashboard · localhost:8501/unit-5</span><span class="chip">docker compose up</span><span class="chip">python run_all.py · <span data-b="meta.total_time" data-f="f0"></span> s on a laptop CPU</span>
+          <span class="chip">earlydrop/unit5_ensembles.py</span>
+        </div>
+      </div>
+    </section>
+
+    <div id="chrome"><span class="sec" id="secLabel"></span><span class="bar"><i id="progress"></i></span><span class="num" id="counter"></span></div>
+  </div>
+</div>
+<div id="help" aria-hidden="true"><kbd>←</kbd> <kbd>→</kbd> move · <kbd>N</kbd> notes · <kbd>O</kbd> overview · <kbd>F</kbd> fullscreen</div>
+<div id="notes" hidden></div>
+<div id="ov" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="deck-data.js" charset="utf-8"></script>
+<script src="pbl3.js" charset="utf-8"></script>

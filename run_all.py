@@ -1,6 +1,6 @@
 """EarlyDrop: run the whole pipeline end to end.
 
-    python run_all.py              generate data, run Units 1-4, write results/ figs/ deck data
+    python run_all.py              generate data, run Units 1-5, write results/ figs/ deck data
     python run_all.py --no-generate   reuse the existing data/raw files
 """
 import argparse
@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 
 from earlydrop import config as C
-from earlydrop import generate, preprocess, realcheck, unit1_stats, unit2_models, unit3_clustering, unit4_hmm
+from earlydrop import generate, preprocess, realcheck, unit1_stats, unit2_models, unit3_clustering, unit4_hmm, unit5_ensembles
 
 warnings.filterwarnings("ignore")
 
@@ -54,6 +54,7 @@ def main() -> int:
     u2 = step("Unit 2: regression + classification", lambda: unit2_models.run(syn))
     u3 = step("Unit 3: clustering, PCA, factor analysis", lambda: unit3_clustering.run(syn, outcomes))
     u4 = step("Unit 4: HMM + Kalman filter", lambda: unit4_hmm.run(syn, history))
+    u5 = step("Unit 5: CART, bagging, boosting, BMA, stacking", lambda: unit5_ensembles.run(syn))
     rc = step("real responses: calibration + scoring", lambda: realcheck.run(syn, real, real_log))
 
     checks = {
@@ -67,6 +68,11 @@ def main() -> int:
         "scratch_pca_eigenvalues_match_sklearn": u3["scratch_vs_sklearn"]["pca_eigvals_match"],
         "scratch_hmm_loglik_matches_hmmlearn": abs(u4["loglik"] - u4["hmmlearn"]["loglik_same_params"]) < 1e-6,
         "scratch_hmm_as_good_as_hmmlearn_fit": u4["loglik"] >= u4["hmmlearn"]["loglik_own_fit"] - 0.5,
+        "scratch_cart_matches_sklearn_tree": u5["cart"]["scratch_vs_sklearn_depth4"]["test_agreement"] >= 0.97,
+        "scratch_adaboost_matches_sklearn": u5["adaboost"]["scratch_vs_sklearn"]["test_agreement"] >= 0.97,
+        "scratch_gboost_matches_sklearn": u5["gboost"]["scratch_vs_sklearn"]["max_abs_proba_diff"] < 0.02,
+        "scratch_random_forest_auc_close_to_sklearn": abs(u5["forest"]["test_auc_scratch_rf"]
+                                                          - u5["forest"]["test_auc_sklearn_rf"]) < 0.02,
     }
     metrics = {
         "meta": {"project": "EarlyDrop", "course": "21CSC305P Machine Learning", "section": "E2",
@@ -74,7 +80,7 @@ def main() -> int:
                  "n_real": 0 if real is None else len(real), "generated_at": time.strftime("%Y-%m-%d %H:%M"),
                  "timings_sec": timings, "checks": checks},
         "cleaning": syn_log,
-        "unit1": u1, "unit2": u2, "unit3": u3, "unit4": u4, "real": rc,
+        "unit1": u1, "unit2": u2, "unit3": u3, "unit4": u4, "unit5": u5, "real": rc,
     }
     C.RESULTS.mkdir(parents=True, exist_ok=True)
     payload = json.dumps(metrics, default=_json_default, indent=1)

@@ -10,11 +10,11 @@
 | 3 | Shaurya Ojha | RA2411003011565 |
 | 4 | Aditya Bhutada | RA2411003011607 |
 
-EarlyDrop asks whether mid-semester survey signals can flag students whose **end-semester SGPA will fall below 6.5**, early enough for help to matter. This repo covers **PBL-I (Units 1–2)** and **PBL-II (Units 3–4)** end to end:
+EarlyDrop asks whether mid-semester survey signals can flag students whose **end-semester SGPA will fall below 6.5**, early enough for help to matter. This repo covers **PBL-I (Units 1–2)**, **PBL-II (Units 3–4)** and **PBL-III (Unit 5)** end to end:
 - a data pipeline
 - from-scratch implementations, each checked against a library
 - a Streamlit dashboard
-- an animated review deck with a PDF backup
+- animated review decks (PBL-I/II and PBL-III) with PDF and PPTX backups
 
 ---
 
@@ -30,7 +30,8 @@ Then open:
 | What | URL |
 |---|---|
 | Dashboard | http://localhost:8501 |
-| Review deck | http://localhost:8080 (press `F` for fullscreen) |
+| Review deck (PBL-I/II) | http://localhost:8080 (press `F` for fullscreen) |
+| Review deck (PBL-III) | http://localhost:8080/pbl3.html |
 
 `STOP.bat` (or `docker compose down`) stops everything. The first build downloads about 1 GB and runs the whole pipeline once.
 
@@ -38,13 +39,15 @@ Then open:
 
 ```bash
 pip install -r requirements.txt
-python run_all.py                       # ~1–2 min on a laptop CPU: data → Units 1–4 → results/ figs/ deck data
+python run_all.py                       # ~2 min on a laptop CPU: data → Units 1–5 → results/ figs/ deck data
 streamlit run app/streamlit_app.py      # dashboard
 start deck/index.html                   # deck (or open it in any browser)
 powershell -File deck/export_pdf.ps1    # deck → deck/EarlyDrop_Deck.pdf
+powershell -File deck/export_pdf.ps1 -Page pbl3.html -Out EarlyDrop_PBL3_Deck.pdf
+python deck/export_pptx.py deck/pbl3.html deck/EarlyDrop_PBL3_Deck.pdf deck/EarlyDrop_PBL3_Deck.pptx
 ```
 
-**Hardware.** Everything is classical ML on about 400 students, so no GPU is needed. The full pipeline runs on an Intel Core Ultra 5 laptop CPU in under two minutes. A GPU (e.g. an RTX 4080) would not speed anything up.
+**Hardware.** Everything is classical ML on about 400 students, so no GPU is needed. The full pipeline runs on an Intel Core Ultra 5 laptop CPU in about two minutes (Unit 4 and Unit 5 take ~45 s each, parallelised with joblib). A GPU (e.g. an RTX 4080) would not speed anything up.
 
 ---
 
@@ -88,9 +91,15 @@ Numbers below describe this synthetic cohort, not SRM students. The pipeline run
 | 3 | PCA (eigen-decomposition), choosing latent dimensions, factor analysis | `unit3_clustering.py` | PCA yes |
 | 4 | Markov chain, HMM: scaled forward–backward, Baum–Welch, Viterbi, BIC over K | `unit4_hmm.py` | yes |
 | 4 | Linear dynamical system (Kalman filter, MLE of noise variances) | `unit4_hmm.py` | yes |
+| 5 | CART (Gini, cost-complexity pruning), bagging, random forest with OOB | `unit5_ensembles.py` | yes |
+| 5 | Boosting: AdaBoost (stumps), gradient boosting (log-loss, Newton leaves, shrinkage) | `unit5_ensembles.py` | yes |
+| 5 | Bayesian model averaging over 64 feature-block models (Laplace evidence) | `unit5_ensembles.py` | yes |
+| 5 | Generalized additive model (B-splines), MLP as an adaptive basis function model | `unit5_ensembles.py` | – |
+| 5 | Ensemble learning: voting, stacking, 17-model comparison, corrected t-test, bias–variance | `unit5_ensembles.py` | yes |
 
-`run_all.py` runs 8 self-checks and fails loudly if any break:
+`run_all.py` runs 12 self-checks and fails loudly if any break:
 - the from-scratch OLS, GMM, PCA and HMM match sklearn and hmmlearn
+- the from-scratch CART, AdaBoost, gradient boosting and random forest match sklearn
 - the Bayesian LR matches logistic regression
 - the schema is intact and nothing is missing after cleaning
 
@@ -112,18 +121,25 @@ Numbers below describe this synthetic cohort, not SRM students. The pipeline run
 | 4 | Decoding | Viterbi | true hidden state recovered 92.5 % of the time; identical to hmmlearn |
 | 4 | Next-semester SGPA | Kalman filter | RMSE 0.897 (persistence 0.924) |
 | 4 | Early warning | grades only vs survey | ROC-AUC 0.862 (HMM on grade history) vs 0.953 (survey) |
+| 5 | Does combining trees help? | CART → random forest | 5-fold CV AUC 0.821 → 0.953; tree variance 0.066 → 0.002 |
+| 5 | Scratch vs library | CART / AdaBoost / GB / RF | 100 % / 100 % agreement; max abs Δp 0.0035; test AUC 0.954 vs 0.959 |
+| 5 | Which features matter? | BMA over 64 models | inclusion: grades 1.00, attendance 1.00, motivation 0.95, study habits 0.04 |
+| 5 | Best of 17 models | CV AUC | BMA 0.954, logistic 0.953, stacking 0.953; no ensemble beats logistic (all p > 0.05) |
+| 5 | Operating point | BMA, threshold 0.3 | recall 0.89, precision 0.74 on the 100-student test set |
 
 Read honestly:
 - The HMM's next-band accuracy ties a plain Markov chain (76.1 %), because the emission matrix is nearly diagonal. It wins only on log-loss.
 - Adding the HMM forecast to the survey does not lift AUC, since the survey already contains previous SGPA and CGPA.
+- Ensembles fix the single tree's variance but do not beat logistic regression, because the generator builds risk additively from latent traits. A linear model is already close to the truth.
 
 ## Repository layout
 
 ```
-earlydrop/          config · generate · preprocess · unit1_stats · unit2_models · unit3_clustering · unit4_hmm · realcheck · plots
+earlydrop/          config · generate · preprocess · unit1_stats · unit2_models · unit3_clustering · unit4_hmm · unit5_ensembles · realcheck · plots
 run_all.py          the whole pipeline + self-checks → results/metrics.json, figs/*.png, deck/deck-data.js
 app/                Streamlit dashboard (streamlit_app.py, views/, fx/ motion engine + "Blackboard" theme)
-deck/               animated review deck (index.html, deck.js, deck-data.js) + export_pdf.ps1 → EarlyDrop_Deck.pdf
+deck/               review decks: index.html + deck.js (PBL-I/II), pbl3.html + pbl3.js (PBL-III), deck-data.js
+                    export_pdf.ps1 → PDF · export_pptx.py → PPTX (one image per slide, notes in the notes pane)
 data/real/          the 15 real form responses        data/raw/ synthetic export, outcomes, semester history, ground truth
 docs/               build-phases.md · viva-cheatsheet.md
 Dockerfile · docker-compose.yml · START.bat · STOP.bat · start.sh · requirements.txt
@@ -131,7 +147,7 @@ Dockerfile · docker-compose.yml · START.bat · STOP.bat · start.sh · require
 
 ## Presenting
 
-**The deck:** open `deck/index.html` (or http://localhost:8080 under Docker).
+**The decks:** open `deck/index.html` for PBL-I/II or `deck/pbl3.html` for PBL-III (or http://localhost:8080 and http://localhost:8080/pbl3.html under Docker).
 
 | Keys | Action |
 |---|---|
@@ -141,7 +157,7 @@ Dockerfile · docker-compose.yml · START.bat · STOP.bat · start.sh · require
 | `O` | slide overview |
 | `F` | fullscreen |
 
-`index.html?print#s13` shows one slide with no motion. `deck/EarlyDrop_Deck.pdf` is the backup.
+`index.html?print#s13` shows one slide with no motion. `deck/EarlyDrop_Deck.pdf` and `deck/EarlyDrop_PBL3_Deck.pdf` / `.pptx` are the backups.
 
 **The dashboard:** add `?static` to the URL to turn motion off on slow projector PCs. The **Predict a student** page is the live demo. Move attendance and watch the risk and its credible band change.
 

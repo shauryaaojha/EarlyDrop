@@ -19,13 +19,16 @@ PAGES = {
         st.Page("views/unit3.py", title="Clustering & PCA", icon=":material/bubble_chart:", url_path="unit-3"),
         st.Page("views/unit4.py", title="Hidden Markov", icon=":material/timeline:", url_path="unit-4"),
     ],
+    "PBL-III · Unit 5": [
+        st.Page("views/unit5.py", title="Ensembles", icon=":material/forest:", url_path="unit-5"),
+    ],
     "Early warning": [
         st.Page("views/predict.py", title="Predict a student", icon=":material/person_search:", url_path="predict"),
     ],
 }
 pg = st.navigation(PAGES)
 with st.sidebar:
-    st.markdown('<div class="ed-sidefoot"><div class="k">Next review · PBL-II</div><div class="d">28 Oct 2026</div>'
+    st.markdown('<div class="ed-sidefoot"><div class="k">Next review · PBL-III</div><div class="d">18 Nov 2026</div>'
                 '<div class="team"><span title="Yash Arun Mulajkar">YM</span><span title="Bignesh Sahu">BS</span>'
                 '<span title="Shaurya Ojha">SO</span><span title="Aditya Bhutada">AB</span></div></div>',
                 unsafe_allow_html=True)

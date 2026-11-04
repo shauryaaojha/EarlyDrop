@@ -3,8 +3,9 @@ import streamlit as st
 from common import kpi, metrics
 
 M = metrics()
-u1, u2, u3, u4 = M["unit1"], M["unit2"], M["unit3"], M["unit4"]
+u1, u2, u3, u4, u5 = M["unit1"], M["unit2"], M["unit3"], M["unit4"], M["unit5"]
 best = max(u2["classification"]["test"], key=lambda r: r["roc_auc"])
+u5auc = lambda prefix: next(r["auc_fold_mean"] for r in u5["compare_cv"] if r["model"].startswith(prefix))  # noqa: E731
 ew = {r["source"]: r["roc_auc"] for r in u4["early_warning"]}
 
 st.markdown(f"""
@@ -12,7 +13,7 @@ st.markdown(f"""
   <div class="ed-eyebrow">21CSC305P · Machine Learning</div>
   <h1 class="ed-hero-title">EarlyDrop</h1>
   <div class="ed-hero-sub">Spotting academic risk <em>before</em> the grades fall. Survey signals, grade
-  trajectories and four units of machine learning, rolled into one early-warning system.</div>
+  trajectories and five units of machine learning, rolled into one early-warning system.</div>
   <div style="margin-top:1.4rem"><span class="ed-badge"><i></i>SYNTHETIC COHORT · n = {u1['n_rows']}</span></div>
 </section>""", unsafe_allow_html=True)
 
@@ -34,6 +35,7 @@ with left:
         ("Unit 2 · linear models", "OLS · Ridge · Huber · Bayesian LR · LDA · SVM kernels"),
         ("Unit 3 · mixture models", "K-Means · EM for GMM · hierarchical · PCA · factor analysis"),
         ("Unit 4 · sequences", "Markov chain · HMM (Baum–Welch, Viterbi) · Kalman filter"),
+        ("Unit 5 · combining models", "CART · bagging · random forest · AdaBoost · gradient boosting · BMA · GAM · stacking"),
         ("Early warning", "risk with an uncertainty band, persona and trajectory"),
     ]
     st.markdown('<div class="ed-steps">' + "".join(
@@ -50,6 +52,11 @@ with right:
          f"HMM transition error max |Â − A| = <b>{u4['truth']['A_max_abs_error']:.3f}</b><br>"
          f"Factor analysis finds <b>{u3['factor_analysis']['n_factors_best']}</b> latent factors<br>"
          f"Scratch EM = sklearn (ARI <b>{u3['scratch_vs_sklearn']['gmm_ari']:.2f}</b>)"),
+        ("Ensembles (Unit 5)",
+         f"one tree <b>{u5auc('CART (scratch'):.3f}</b> → "
+         f"random forest <b>{u5auc('Random Forest (scratch'):.3f}</b> CV AUC<br>"
+         f"best: {u5['best_ensemble']} <b>{u5['compare_cv'][0]['auc_fold_mean']:.3f}</b> vs logistic "
+         f"<b>{u5auc('Logistic'):.3f}</b>"),
     ]
     st.markdown('<div style="display:grid;gap:.55rem">' + "".join(
         f'<div class="ed-card"><b>{t}</b><div style="margin-top:.5rem;color:#c9cfc6;line-height:1.7">{b}</div></div>'

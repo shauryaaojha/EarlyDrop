@@ -11,7 +11,7 @@
 | P6 | Docker: one image that runs the pipeline at build time; `START.bat` for non-technical users | `docker compose up` serves :8501 (dashboard) and :8080 (deck) | done |
 | P7 | Review deck: 25 slides, data-bound, animated, PDF backup | every number from `deck-data.js`; PDF has one page per slide | done |
 | P8 | README, viva cheat sheet | — | done |
-| Next | PBL-III (Unit 5): CART, bagging, random forest, boosting, stacking on the same cohort | — | todo |
+| P9 | PBL-III (Unit 5): CART, bagging, RF, AdaBoost, gradient boosting (all scratch), BMA, GAM, MLP, voting, stacking; dashboard page; 20-slide deck + PDF + PPTX | scratch CART/AdaBoost agree 100 % with sklearn; GB max abs Δp 0.0035; 12/12 checks pass | done |
 | Next | Add "SGPA of each completed semester" to the Google Form so real trajectories replace the synthetic history | — | todo |
 
 Re-run everything with `python run_all.py`. The dashboard and deck read only `results/metrics.json` and `deck/deck-data.js`, so they always show the latest run.

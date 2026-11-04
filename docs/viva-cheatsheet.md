@@ -120,3 +120,39 @@ On the declining student, P(Struggling) jumps from about 0 to 0.68 in the semest
 **Kalman filter?** It is a linear dynamical system with a local-level model, xₜ = xₜ₋₁ + w and yₜ = xₜ + v. The noise variances q = 0.21 and r = 0.43 are fitted by maximum likelihood. It gives the best next-SGPA RMSE, 0.897 against 0.924 for persistence.
 
 **The key takeaway?** Struggling is sticky: P(stay Struggling) = 0.84. A student who starts struggling usually keeps struggling unless something changes, and that is the case for intervening early.
+
+## Unit 5: combining models (PBL-III)
+
+**Setup?** The same 400-student cohort, split 300 train / 100 test (stratified, base rate 28 %). Every model gets the same 5-fold CV, and 17 models are compared on it.
+
+**How does CART pick a split?** It tries every mid-point threshold on every feature and keeps the one with the largest drop in Gini impurity, 1 − Σ pₖ². Our root split is internal marks ≤ 58.5, the same as sklearn's. At depth 4 our tree agrees with sklearn on 100 % of test students.
+
+**Why prune?** A full-depth tree memorises the training set (CV AUC 0.821). Cost-complexity pruning minimises R(T) + α|T|, with α chosen by CV, which lifts it to 0.863.
+
+**Bagging vs random forest?**
+- **Bagging:** each tree sees a bootstrap sample, and the trees are averaged.
+- **Random forest:** each split also sees only √p random features. This de-correlates the trees (correlation 0.70 → 0.61), so averaging removes more variance.
+- **Out-of-bag (OOB):** each tree skips about 37 % of the rows, which gives a free validation score (RF OOB accuracy 0.89).
+
+**AdaBoost?** It fits stumps one after another and reweights the students the last stump got wrong. Each stump gets a vote α = ln((1 − ε)/ε). The first stump (internal marks ≤ 58.5) has ε = 0.10, so α = 2.20. Ours matches sklearn on every test student.
+
+**Gradient boosting?**
+- Each tree fits the residual y − p of the log-loss, and its leaf value is a Newton step, γ = Σr / Σp(1 − p).
+- Shrinkage ν trades trees for accuracy. ν = 1 is best after only 8 trees, while ν = 0.03 needs many more trees and reaches the lowest log-loss (0.261).
+- Ours matches sklearn within 0.0035 in probability.
+
+**Bayesian model averaging?**
+- We build 2⁶ = 64 logistic models, one for each subset of 6 feature blocks.
+- Each model is weighted by its Laplace-approximated evidence p(D | M), and the predictions are averaged.
+- Posterior inclusion: grades 1.00, attendance 1.00, motivation 0.95, study habits 0.04.
+- BMA has the best CV AUC of all 17 models (0.954).
+
+**GAM?** It fits a logit that is a sum of one smooth spline per feature, Σ fⱼ(xⱼ). This keeps the model interpretable, since you can plot each fⱼ. The fitted curves are threshold-shaped rather than straight lines.
+
+**Adaptive basis function model?** The MLP learns its own basis functions in the hidden layer, where a GAM or a kernel method uses fixed ones. Trees and boosting are adaptive basis models too, with each leaf acting as an indicator basis function.
+
+**Stacking?** The base models' out-of-fold probabilities feed a logistic meta-learner. It weights LR 1.99, RF 1.61, GB 1.60. The base models are highly correlated (0.81–0.96), so stacking can add little (0.953).
+
+**Did ensembles win?** Not over logistic regression. The corrected resampled t-test (Nadeau–Bengio, 5 folds × 3 repeats) gives p > 0.05 for every model against LR. The generator builds risk additively from latent traits, so a linear model is already close to the truth. Ensembles fixed the tree's variance: the bias–variance split over 30 bootstraps drops tree variance from 0.066 to 0.002 with a random forest.
+
+**Which threshold?** With BMA on the test set, threshold 0.5 gives recall 0.82 and threshold 0.3 gives recall 0.89 (precision 0.74). For early warning, a missed student costs more than a false alarm, so we use 0.3.
